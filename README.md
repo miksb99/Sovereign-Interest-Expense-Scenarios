@@ -296,7 +296,7 @@ Requires Python 3.11+ and the packages in `requirements.txt` (polars, matplotlib
 - Eurostat, EMU convergence criteria series (10-year yields, December 2016) for the 2016 sovereign spreads.
 
 **Macro and fiscal**
-- International Monetary Fund, *World Economic Outlook* database, October 2026, and *Fiscal Monitor*, April 2026 (general-government net lending/borrowing, primary balance, gross debt). IMF DataMapper series `ie` (interest paid on public debt, % of GDP) used for the general-government comparison in section 1.7.
+- International Monetary Fund, *World Economic Outlook* database, October 2026, and *Fiscal Monitor*, April 2026 (general-government net lending/borrowing, primary balance, gross debt). IMF DataMapper series `ie` (interest paid on public debt, % of GDP) used for the general-government comparison in section 1.3.
 - World Bank, *World Development Indicators*, GDP (current LCU), NY.GDP.MKTP.CN.
 - Federal Reserve Bank of St. Louis, FRED (IMF WEO series for US and UK 2016 balances).
 
