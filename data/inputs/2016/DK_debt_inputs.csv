@@ -1,0 +1,113 @@
+# Denmark (DK) -- debt_model input file, vintage 2016, built 2026-10-21 by build_inputs.py from BBG_Data/grid_bmmejh3u.xlsx
+# Snapshot 2016-12-31; calendar-year buckets, base year 2016; DKK billions; rates in %; shares as fractions.
+# Format: section,item,sub_item,period,value,notes (lines starting with # are ignored). Assumptions live in debt_model.py / run_scenarios.py.
+# DATA NOTES / CAVEATS
+#  - debt = marketable central-government securities in the pull (9 coupon issues + 2 bills), domestic market only, deduped by ISIN;
+#    central-bank holdings stay inside the stock (Amount Outstanding is used; its gap to Amount Issued is buybacks)
+#  - linkers 0bn carried at real coupon + 2.0 pp inflation accrual; FRNs 0bn at current coupon
+#  - issuance_mix is INFERRED from the maturity profile (no issue dates in the pull): steady-state, annual issuance at
+#    tenor k ~ maturing in year k minus year k+1 on a 3-year moving average; bills = bills stock
+#    Override in run_scenarios.py / debt_model.py (ISSUANCE_MIX) if you have the debt office's issuance plan
+#  - curve: user-supplied 2016 spot table (O/N, 2Y, 5Y, 10Y, long bond=30Y); 1Y interpolated between O/N and 2Y
+#  - term premia: 5Y/10Y from country_macro_comparison (2016 columns), other tenors shaped with the US ACM-style profile; static TP = implied; the sovereign spread vs Bund (14 bp, TP Build tab) is added FLAT to every tenor rather than shaped
+#  - deficit: IMF GENERAL-government balance; primary deficit = that deficit minus modeled interest (avg cost x debt / GDP).
+#    General government is wider than the central-government debt stock here, so it overstates the central primary deficit
+#  - nominal GDP 2016 = World Bank actual; ngdp_growth_pct = 2016 y/y; ngdp_growth_trend_pct = REALIZED 2016-25 CAGR (for back-testing)
+section,item,sub_item,period,value,notes
+meta,country,,,Denmark,
+meta,country_code,,,DK,
+meta,currency_unit,,,DKK billions,
+meta,base_year,,,2016,"calendar-year buckets; snapshot 2016-12-31"
+meta,horizon_years,,,10,
+meta,curve_date,,,2016-12-31,"bond pull date"
+history,nominal_gdp,,2015,2030.206,"World Bank WDI, current LCU"
+history,nominal_gdp,,2016,2101.520,
+history,ngdp_growth_pct,,2016,3.5126,"latest y/y nominal growth; current-growth default"
+history,ngdp_growth_trend_pct,,2016,4.2739,"2016-2025 nominal GDP CAGR (World Bank); used by run_scenarios.py"
+history,debt_held_by_public,,2016,622.260,"REQUIRED: marketable central govt debt, SRCH as of 2016-12-31"
+history,avg_cost_pct,,2016,2.9510,"REQUIRED: coupon-weighted 3.14% on coupon debt + bills at 1Y -0.62%"
+history,fiscal_deficit,,2016,-6.305,"IMF general govt balance 2016 (+0.3% GDP) x GDP"
+history,primary_deficit_pct_gdp,,2016,-1.1738,"= IMF GG deficit -0.3 minus modeled interest 0.87 % of GDP; current-deficit default"
+bucket,Bills,maturity_years,,1,
+bucket,Bills,price_tenor,,1Y,
+bucket,Bills,in_ladder,,0,"bills are not in the ladder; base stock below"
+bucket,Bills,base_outstanding,,30.880,"bills outstanding at snapshot"
+bucket,2Y,maturity_years,,2,
+bucket,2Y,price_tenor,,2Y,
+bucket,2Y,in_ladder,,1,
+bucket,3Y,maturity_years,,3,
+bucket,3Y,price_tenor,,3Y,
+bucket,3Y,in_ladder,,1,
+bucket,5Y,maturity_years,,5,
+bucket,5Y,price_tenor,,5Y,
+bucket,5Y,in_ladder,,1,
+bucket,7Y,maturity_years,,7,
+bucket,7Y,price_tenor,,7Y,
+bucket,7Y,in_ladder,,1,
+bucket,10Y,maturity_years,,10,
+bucket,10Y,price_tenor,,10Y,
+bucket,10Y,in_ladder,,1,
+bucket,20Y,maturity_years,,20,
+bucket,20Y,price_tenor,,20Y,
+bucket,20Y,in_ladder,,1,
+bucket,30Y,maturity_years,,30,
+bucket,30Y,price_tenor,,30Y,
+bucket,30Y,in_ladder,,1,
+bucket,FRN,maturity_years,,2,
+bucket,FRN,price_tenor,,O/N,
+bucket,FRN,in_ladder,,1,
+issuance_mix,Bills,,,0.151487,"estimated (see header)"
+issuance_mix,2Y,,,0.086485,
+issuance_mix,3Y,,,0.155836,
+issuance_mix,5Y,,,0.116279,
+issuance_mix,7Y,,,0.101187,
+issuance_mix,10Y,,,0.179737,
+issuance_mix,20Y,,,0.208989,
+issuance_mix,30Y,,,0.000000,
+issuance_mix,FRN,,,0.000000,
+maturity_ladder,amount,,2017,52.889,"includes maturities between snapshot and year-end"
+maturity_ladder,coupon_pct,,2017,4.0000,
+maturity_ladder,amount,,2018,51.095,
+maturity_ladder,coupon_pct,,2018,0.2500,
+maturity_ladder,amount,,2019,95.300,
+maturity_ladder,coupon_pct,,2019,4.0000,
+maturity_ladder,amount,,2020,0.000,
+maturity_ladder,coupon_pct,,2020,0.0000,
+maturity_ladder,amount,,2021,92.495,
+maturity_ladder,coupon_pct,,2021,3.0000,
+maturity_ladder,amount,,2022,0.000,
+maturity_ladder,coupon_pct,,2022,0.0000,
+maturity_ladder,amount,,2023,61.880,
+maturity_ladder,coupon_pct,,2023,1.5000,
+maturity_ladder,amount,,2024,21.386,
+maturity_ladder,coupon_pct,,2024,7.0000,
+maturity_ladder,amount,,2025,88.530,
+maturity_ladder,coupon_pct,,2025,1.7500,
+maturity_ladder,amount,,2026,0.000,
+maturity_ladder,coupon_pct,,2026,0.0000,
+maturity_ladder,amount,,2039,127.805,
+maturity_ladder,coupon_pct,,2039,4.5000,
+spot_curve,O/N,,,-0.650,
+spot_curve,1Y,,,-0.625,
+spot_curve,2Y,,,-0.600,
+spot_curve,5Y,,,-0.270,
+spot_curve,10Y,,,0.500,
+spot_curve,30Y,,,0.950,
+implied_tp,O/N,,,0.000,
+implied_tp,1Y,,,0.062,
+implied_tp,2Y,,,-0.017,
+implied_tp,3Y,,,-0.142,
+implied_tp,5Y,,,-0.361,"EUR OIS TP (DKK peg) + DGB–Bund sprd (+14bp '16; -18bp Aug-26)"
+implied_tp,7Y,,,-0.239,
+implied_tp,10Y,,,-0.055,
+implied_tp,20Y,,,-0.128,
+implied_tp,30Y,,,-0.143,
+static_tp,1Y,,,0.062,
+static_tp,2Y,,,-0.017,
+static_tp,3Y,,,-0.142,
+static_tp,5Y,,,-0.361,
+static_tp,7Y,,,-0.239,
+static_tp,10Y,,,-0.055,
+static_tp,20Y,,,-0.128,
+static_tp,30Y,,,-0.143,
+curve_param,on_wedge,,,0,

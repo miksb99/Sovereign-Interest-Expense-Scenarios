@@ -1,0 +1,100 @@
+issuer,fy_end_jun,total_debt_aud_bn,budget_balance_aud_bn,wam_years,spread_bp_throughcycle,spread_bp_current_oct2026,notes
+NSWTC,2016,67,4.7,6.3,48,55,Total TCorp borrowings incl on-lending to state corps; balance = NSW GG net operating balance
+NSWTC,2017,68,5.7,6.3,48,55,
+NSWTC,2018,67,4.2,6.2,48,55,
+NSWTC,2019,72,1.2,6.2,48,55,
+NSWTC,2020,92,-7.0,6.2,48,55,
+NSWTC,2021,111,-7.1,6.3,48,55,published 111.3
+NSWTC,2022,106,-11.0,6.3,48,55,published 105.6 (debt retirement program)
+NSWTC,2023,128,-10.0,6.4,48,55,
+NSWTC,2024,152,-8.0,6.5,48,55,
+NSWTC,2025,178,-5.0,6.5,48,55,
+NSWTC,2026,198,-3.4,6.5,48,55,current balance sheet ~A$198bn (TCorp); balance is budget plan
+TCV,2016,30,2.7,7.5,52,70,Total TCV outstandings; balance = VIC GG net operating balance
+TCV,2017,31,2.7,7.5,52,70,
+TCV,2018,32,2.3,7.5,52,70,
+TCV,2019,41,1.1,7.5,52,70,published 40.9
+TCV,2020,55,-6.5,7.5,52,70,51.2 at Mar-2020; ~55 by Jun
+TCV,2021,72,-12.0,7.5,52,70,
+TCV,2022,89,-13.2,7.5,52,70,
+TCV,2023,108,-8.4,7.5,52,70,
+TCV,2024,128,-4.2,7.5,52,70,
+TCV,2025,152,-2.2,7.5,52,70,A$86bn to refinance 2029-34 per TCV
+TCV,2026,170,0.6,7.5,52,70,balance is budget plan (first surplus)
+QTC,2016,82,1.0,7.0,55,62,QTC total debt outstanding (funds GG + gov-owned corps); balance = QLD GG net operating balance
+QTC,2017,83,2.8,7.0,55,62,
+QTC,2018,85,1.6,7.0,55,62,
+QTC,2019,90,1.0,7.0,55,62,published 90.0
+QTC,2020,100,-5.7,7.0,55,62,published 99.5
+QTC,2021,102,-3.8,7.0,55,62,
+QTC,2022,105,1.9,7.0,55,62,
+QTC,2023,115,13.9,7.0,55,62,record coal-royalty surplus
+QTC,2024,133,0.6,7.0,55,62,
+QTC,2025,159,-3.0,7.0,55,62,published ~158.9 (Jun-2025)
+QTC,2026,175,-8.6,7.0,55,62,FY26 term program A$33.5bn gross; balance is budget plan
+WATC,2016,45,-2.0,4.8,42,45,WATC total debt on issue; balance = WA GG net operating balance
+WATC,2017,48,-3.0,4.8,42,45,
+WATC,2018,49,-0.6,4.8,42,45,
+WATC,2019,51,1.1,4.8,42,45,
+WATC,2020,53,1.7,4.8,42,45,
+WATC,2021,52,5.8,4.8,42,45,iron-ore surpluses begin
+WATC,2022,51,6.0,4.8,42,45,
+WATC,2023,50,4.2,4.8,42,45,published 49.8
+WATC,2024,50,3.2,4.8,42,45,
+WATC,2025,51,2.5,4.8,42,45,published 51.1
+WATC,2026,55,2.4,4.8,42,45,new-money program ramping (A$4.9bn FY26)
+SAFA,2016,14,-0.3,5.0,52,60,SAFA total funding; balance = SA GG net operating balance
+SAFA,2017,15,0.4,5.0,52,60,
+SAFA,2018,16,-0.1,5.0,52,60,
+SAFA,2019,18,0.1,5.0,52,60,
+SAFA,2020,22,-1.5,5.0,52,60,
+SAFA,2021,25,-1.5,5.0,52,60,
+SAFA,2022,27,-0.4,5.0,52,60,
+SAFA,2023,30,0.1,5.0,52,60,
+SAFA,2024,33,-0.3,5.0,52,60,
+SAFA,2025,37,-1.3,5.0,52,60,
+SAFA,2026,41,-0.5,5.0,52,60,
+TASCOR,2016,3.0,0.1,6.0,55,60,small issuer - coarse estimates
+TASCOR,2017,3.0,0.1,6.0,55,60,
+TASCOR,2018,3.0,0.2,6.0,55,60,
+TASCOR,2019,3.0,0.1,6.0,55,60,
+TASCOR,2020,4.0,-1.1,6.0,55,60,
+TASCOR,2021,5.0,-0.4,6.0,55,60,
+TASCOR,2022,5.5,0.1,6.0,55,60,
+TASCOR,2023,6.0,-0.7,6.0,55,60,
+TASCOR,2024,7.0,-1.0,6.0,55,60,
+TASCOR,2025,8.0,-1.3,6.0,55,60,Tas fiscal position deteriorating fast
+TASCOR,2026,9.0,-1.0,6.0,55,60,
+NTTC,2016,4.0,-0.3,6.0,65,70,small issuer - coarse estimates
+NTTC,2017,4.5,-0.5,6.0,65,70,
+NTTC,2018,5.0,-0.8,6.0,65,70,
+NTTC,2019,5.5,-1.0,6.0,65,70,
+NTTC,2020,6.0,-0.4,6.0,65,70,
+NTTC,2021,6.5,-1.3,6.0,65,70,
+NTTC,2022,6.5,-0.5,6.0,65,70,
+NTTC,2023,6.5,-0.4,6.0,65,70,
+NTTC,2024,7.0,-0.7,6.0,65,70,
+NTTC,2025,7.5,-0.8,6.0,65,70,
+NTTC,2026,8.0,-0.7,6.0,65,70,
+ACTGOV,2016,5.0,-0.2,6.0,55,60,small issuer - coarse estimates
+ACTGOV,2017,5.5,-0.1,6.0,55,60,
+ACTGOV,2018,6.0,0.0,6.0,55,60,
+ACTGOV,2019,7.0,-0.1,6.0,55,60,
+ACTGOV,2020,8.0,-0.9,6.0,55,60,
+ACTGOV,2021,9.0,-0.9,6.0,55,60,
+ACTGOV,2022,10.0,-1.0,6.0,55,60,
+ACTGOV,2023,11.0,-0.8,6.0,55,60,
+ACTGOV,2024,12.0,-0.9,6.0,55,60,
+ACTGOV,2025,13.5,-1.0,6.0,55,60,
+ACTGOV,2026,15.0,-0.9,6.0,55,60,
+AGGREGATE,2016,250,5.7,6.6,51,60,Sum of eight; WAM/spread are 2025-debt-weighted
+AGGREGATE,2017,258,8.1,6.6,51,60,
+AGGREGATE,2018,263,6.8,6.6,51,60,
+AGGREGATE,2019,288,4.5,6.6,51,60,
+AGGREGATE,2020,340,-21.4,6.6,51,60,
+AGGREGATE,2021,383,-21.2,6.6,51,60,
+AGGREGATE,2022,400,-18.1,6.6,51,60,
+AGGREGATE,2023,455,-2.1,6.6,51,60,
+AGGREGATE,2024,522,-11.3,6.6,51,60,
+AGGREGATE,2025,606,-12.1,6.6,51,60,
+AGGREGATE,2026,671,-12.1,6.6,51,60,2026 balances are budget plans

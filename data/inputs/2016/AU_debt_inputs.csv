@@ -1,0 +1,130 @@
+# Australia (AU) -- debt_model input file, vintage 2016, built 2026-10-21 by build_inputs.py from BBG_Data/grid_yxvciyfj.xlsx
+# Snapshot 2016-06-30; calendar-year buckets, base year 2016; AUD billions; rates in %; shares as fractions.
+# Format: section,item,sub_item,period,value,notes (lines starting with # are ignored). Assumptions live in debt_model.py / run_scenarios.py.
+# DATA NOTES / CAVEATS
+#  - debt = marketable central-government securities in the pull (29 coupon issues + 3 bills), domestic market only, deduped by ISIN;
+#    central-bank holdings stay inside the stock (Amount Outstanding is used; its gap to Amount Issued is buybacks)
+#  - linkers 30bn carried at real coupon + 2.0 pp inflation accrual; FRNs 0bn at current coupon
+#  - issuance_mix is INFERRED from the maturity profile (no issue dates in the pull): steady-state, annual issuance at
+#    tenor k ~ maturing in year k minus year k+1 on a 3-year moving average; bills = bills stock
+#    Override in run_scenarios.py / debt_model.py (ISSUANCE_MIX) if you have the debt office's issuance plan
+#  - curve: user-supplied 2016 spot table (O/N, 2Y, 5Y, 10Y, long bond=30Y); 1Y interpolated between O/N and 2Y
+#  - term premia: 5Y/10Y from country_macro_comparison (2016 columns), other tenors shaped with the US ACM-style profile; static TP = implied
+#  - deficit: IMF GENERAL-government balance; primary deficit = that deficit minus modeled interest (avg cost x debt / GDP).
+#    General government is wider than the central-government debt stock here, so it overstates the central primary deficit
+#  - nominal GDP 2016 = World Bank actual; ngdp_growth_pct = 2016 y/y; ngdp_growth_trend_pct = REALIZED 2016-25 CAGR (for back-testing)
+#  - the pull is dated 2016-06-30: maturities between then and end-2016 are folded into the first projection year
+section,item,sub_item,period,value,notes
+meta,country,,,Australia,
+meta,country_code,,,AU,
+meta,currency_unit,,,AUD billions,
+meta,base_year,,,2016,"calendar-year buckets; snapshot 2016-06-30"
+meta,horizon_years,,,10,
+meta,curve_date,,,2016-06-30,"bond pull date"
+history,nominal_gdp,,2015,1630.787,"World Bank WDI, current LCU"
+history,nominal_gdp,,2016,1664.441,
+history,ngdp_growth_pct,,2016,2.0637,"latest y/y nominal growth; current-growth default"
+history,ngdp_growth_trend_pct,,2016,5.8605,"2016-2025 nominal GDP CAGR (World Bank); used by run_scenarios.py"
+history,debt_held_by_public,,2016,420.399,"REQUIRED: marketable central govt debt, SRCH as of 2016-06-30"
+history,avg_cost_pct,,2016,4.1598,"REQUIRED: coupon-weighted 4.19% on coupon debt + bills at 1Y 1.68%"
+history,fiscal_deficit,,2016,39.947,"IMF general govt balance 2016 (-2.4% GDP) x GDP"
+history,primary_deficit_pct_gdp,,2016,1.3493,"= IMF GG deficit 2.4 minus modeled interest 1.05 % of GDP; current-deficit default"
+bucket,Bills,maturity_years,,1,
+bucket,Bills,price_tenor,,1Y,
+bucket,Bills,in_ladder,,0,"bills are not in the ladder; base stock below"
+bucket,Bills,base_outstanding,,5.000,"bills outstanding at snapshot"
+bucket,2Y,maturity_years,,2,
+bucket,2Y,price_tenor,,2Y,
+bucket,2Y,in_ladder,,1,
+bucket,3Y,maturity_years,,3,
+bucket,3Y,price_tenor,,3Y,
+bucket,3Y,in_ladder,,1,
+bucket,5Y,maturity_years,,5,
+bucket,5Y,price_tenor,,5Y,
+bucket,5Y,in_ladder,,1,
+bucket,7Y,maturity_years,,7,
+bucket,7Y,price_tenor,,7Y,
+bucket,7Y,in_ladder,,1,
+bucket,10Y,maturity_years,,10,
+bucket,10Y,price_tenor,,10Y,
+bucket,10Y,in_ladder,,1,
+bucket,20Y,maturity_years,,20,
+bucket,20Y,price_tenor,,20Y,
+bucket,20Y,in_ladder,,1,
+bucket,30Y,maturity_years,,30,
+bucket,30Y,price_tenor,,30Y,
+bucket,30Y,in_ladder,,1,
+bucket,FRN,maturity_years,,2,
+bucket,FRN,price_tenor,,O/N,
+bucket,FRN,in_ladder,,1,
+issuance_mix,Bills,,,0.074256,"estimated (see header)"
+issuance_mix,2Y,,,0.000000,
+issuance_mix,3Y,,,0.203190,
+issuance_mix,5Y,,,0.118859,
+issuance_mix,7Y,,,0.034933,
+issuance_mix,10Y,,,0.415336,
+issuance_mix,20Y,,,0.145010,
+issuance_mix,30Y,,,0.008416,
+issuance_mix,FRN,,,0.000000,
+maturity_ladder,amount,,2017,30.728,"includes maturities between snapshot and year-end"
+maturity_ladder,coupon_pct,,2017,4.9236,
+maturity_ladder,amount,,2018,43.689,
+maturity_ladder,coupon_pct,,2018,4.2766,
+maturity_ladder,amount,,2019,44.647,
+maturity_ladder,coupon_pct,,2019,4.0349,
+maturity_ladder,amount,,2020,44.711,
+maturity_ladder,coupon_pct,,2020,3.6752,
+maturity_ladder,amount,,2021,24.999,
+maturity_ladder,coupon_pct,,2021,5.7500,
+maturity_ladder,amount,,2022,26.490,
+maturity_ladder,coupon_pct,,2022,5.2696,
+maturity_ladder,amount,,2023,21.300,
+maturity_ladder,coupon_pct,,2023,5.5000,
+maturity_ladder,amount,,2024,24.700,
+maturity_ladder,coupon_pct,,2024,2.7500,
+maturity_ladder,amount,,2025,32.643,
+maturity_ladder,coupon_pct,,2025,3.6008,
+maturity_ladder,amount,,2026,29.100,
+maturity_ladder,coupon_pct,,2026,4.2500,
+maturity_ladder,amount,,2027,36.000,
+maturity_ladder,coupon_pct,,2027,4.1722,
+maturity_ladder,amount,,2028,7.000,
+maturity_ladder,coupon_pct,,2028,2.2500,
+maturity_ladder,amount,,2029,12.000,
+maturity_ladder,coupon_pct,,2029,3.2500,
+maturity_ladder,amount,,2030,3.443,
+maturity_ladder,coupon_pct,,2030,4.5000,
+maturity_ladder,amount,,2033,10.700,
+maturity_ladder,coupon_pct,,2033,4.5000,
+maturity_ladder,amount,,2035,8.750,
+maturity_ladder,coupon_pct,,2035,3.2071,
+maturity_ladder,amount,,2037,8.800,
+maturity_ladder,coupon_pct,,2037,3.7500,
+maturity_ladder,amount,,2039,4.000,
+maturity_ladder,coupon_pct,,2039,3.2500,
+maturity_ladder,amount,,2040,1.700,
+maturity_ladder,coupon_pct,,2040,3.2500,
+spot_curve,O/N,,,1.500,
+spot_curve,1Y,,,1.675,
+spot_curve,2Y,,,1.850,
+spot_curve,5Y,,,2.350,
+spot_curve,10Y,,,2.860,
+spot_curve,30Y,,,3.500,
+implied_tp,O/N,,,0.000,
+implied_tp,1Y,,,0.006,
+implied_tp,2Y,,,0.012,
+implied_tp,3Y,,,0.022,
+implied_tp,5Y,,,0.039,"Assumed equal to Canada (per user instruction)"
+implied_tp,7Y,,,0.097,
+implied_tp,10Y,,,0.185,
+implied_tp,20Y,,,0.255,
+implied_tp,30Y,,,0.268,
+static_tp,1Y,,,0.006,
+static_tp,2Y,,,0.012,
+static_tp,3Y,,,0.022,
+static_tp,5Y,,,0.039,
+static_tp,7Y,,,0.097,
+static_tp,10Y,,,0.185,
+static_tp,20Y,,,0.255,
+static_tp,30Y,,,0.268,
+curve_param,on_wedge,,,0,

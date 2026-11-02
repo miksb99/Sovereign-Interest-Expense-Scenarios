@@ -1,0 +1,56 @@
+issuer,cal_year_end,total_debt_cny_tn,net_issuance_cny_tn,wam_years,spread_bp_throughcycle,spread_bp_current_oct2026,notes
+CHINA_LGB,2016,10.6,6.0,4.5,22,15,MoF local govt bonds (general+special); 2015-18 growth is mostly the RMB12.2tn loan-to-bond swap not new borrowing
+CHINA_LGB,2017,14.7,4.1,5.0,22,15,
+CHINA_LGB,2018,18.4,3.7,5.5,22,15,issuance guidance CGB+40bp era
+CHINA_LGB,2019,21.3,2.9,6.0,22,15,
+CHINA_LGB,2020,25.5,4.2,6.5,22,15,
+CHINA_LGB,2021,30.5,5.0,7.0,22,15,
+CHINA_LGB,2022,35.1,4.6,7.5,22,15,
+CHINA_LGB,2023,40.7,5.6,8.5,22,15,2023 avg issuance tenor 12.4y @ 2.9%
+CHINA_LGB,2024,47.5,6.8,9.0,22,15,published 47.54; RMB10tn hidden-debt swap begins (transfers from LGFV)
+CHINA_LGB,2025,55.0,7.5,9.5,22,15,53.7 at Sep-2025; Q1-2025 avg issuance tenor 17.2y @ 1.97%
+CHINA_LGB,2026,60.0,5.0,10.0,22,15,projection; ceiling 57.9tn for 2025 raised annually
+LGFV_AAA,2016,2.2,0.3,2.2,110,55,Onshore chengtou bonds only; bucket = ~35-37% of stock
+LGFV_AAA,2017,2.5,0.3,2.2,110,55,
+LGFV_AAA,2018,2.7,0.2,2.2,110,55,
+LGFV_AAA,2019,3.2,0.5,2.2,110,55,
+LGFV_AAA,2020,3.8,0.6,2.2,110,55,
+LGFV_AAA,2021,4.4,0.6,2.2,110,55,
+LGFV_AAA,2022,4.8,0.4,2.2,110,55,
+LGFV_AAA,2023,5.4,0.6,2.2,110,55,
+LGFV_AAA,2024,5.9,0.5,2.2,110,55,
+LGFV_AAA,2025,5.8,-0.1,2.2,110,55,strong names keep market access
+LGFV_AAA,2026,5.8,0.0,2.2,110,55,
+LGFV_AAplus,2016,1.9,0.2,2.2,170,75,bucket = ~30% of stock
+LGFV_AAplus,2017,2.1,0.2,2.2,170,75,
+LGFV_AAplus,2018,2.3,0.2,2.2,170,75,
+LGFV_AAplus,2019,2.7,0.4,2.2,170,75,
+LGFV_AAplus,2020,3.2,0.5,2.2,170,75,
+LGFV_AAplus,2021,3.8,0.6,2.2,170,75,
+LGFV_AAplus,2022,4.1,0.3,2.2,170,75,
+LGFV_AAplus,2023,4.7,0.6,2.2,170,75,
+LGFV_AAplus,2024,4.9,0.2,2.2,170,75,net financing "very small or negative" below AAA (S&P)
+LGFV_AAplus,2025,4.8,-0.1,2.2,170,75,
+LGFV_AAplus,2026,4.6,-0.2,2.2,170,75,
+LGFV_AA_below,2016,2.1,0.2,2.2,260,105,bucket = ~33-35% of stock; includes district/county platforms
+LGFV_AA_below,2017,2.4,0.3,2.2,260,105,
+LGFV_AA_below,2018,2.8,0.4,2.2,260,105,2018 + 2022 (Zunyi) stress episodes: AA spreads 300-450bp
+LGFV_AA_below,2019,3.1,0.3,2.2,260,105,
+LGFV_AA_below,2020,3.8,0.7,2.2,260,105,
+LGFV_AA_below,2021,4.4,0.6,2.2,260,105,
+LGFV_AA_below,2022,4.9,0.5,2.2,260,105,net financing turns negative Q4-2022
+LGFV_AA_below,2023,5.4,0.5,2.2,260,105,
+LGFV_AA_below,2024,5.5,0.1,2.2,260,105,refinancing-only lists; 12 high-risk provinces restricted
+LGFV_AA_below,2025,5.2,-0.3,2.2,260,105,swap retires weak credits first
+LGFV_AA_below,2026,4.9,-0.3,2.2,260,105,RMB2.3tn LGFV bond reduction pledged by 2028
+AGGREGATE,2016,16.8,6.7,7.9,57,29,LGB + onshore LGFV bonds; WAM/spread are 2025-weighted
+AGGREGATE,2017,21.7,4.9,7.9,57,29,
+AGGREGATE,2018,26.2,4.5,7.9,57,29,
+AGGREGATE,2019,30.3,4.1,7.9,57,29,
+AGGREGATE,2020,36.3,6.0,7.9,57,29,
+AGGREGATE,2021,43.1,6.8,7.9,57,29,
+AGGREGATE,2022,48.9,5.8,7.9,57,29,
+AGGREGATE,2023,56.2,7.3,7.9,57,29,
+AGGREGATE,2024,63.8,7.6,7.9,57,29,
+AGGREGATE,2025,70.8,7.0,7.9,57,29,
+AGGREGATE,2026,75.3,4.5,7.9,57,29,projection

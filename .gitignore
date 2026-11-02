@@ -1,0 +1,15 @@
+# OS / editor
+.DS_Store
+__pycache__/
+*.pyc
+.vscode/
+
+# raw Bloomberg pulls are licensed data and stay local
+data/bloomberg/
+
+# regenerated intermediates (rebuilt by model/run_all.py; the committed outputs/ folder keeps the useful set)
+outputs/standalone/
+outputs/*/??_interest_to_gdp.csv
+outputs/2026/TIER1_blocks.csv
+outputs/2026/TIER1_grid.csv
+outputs/2016/ALL_detail_paths.csv

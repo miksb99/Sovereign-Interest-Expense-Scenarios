@@ -1,0 +1,241 @@
+# =============================================================================================
+# DEBT MODEL INPUT FILE  -  United States, fiscal-year basis, base year FY2026 (snapshot Jul-2026)
+# Read by debt_model.py.  Lines starting with '#' are ignored, so annotate freely.
+#
+# COLUMN CONVENTIONS  (header must stay exactly: section,item,sub_item,period,value,notes)
+#   section   : which block the row belongs to (see list below)
+#   item      : the name of the thing (a series, a bucket, a tenor, a scenario)
+#   sub_item  : second key where needed (bucket attribute, or tenor inside a rate scenario)
+#   period    : fiscal year the value applies to; BLANK = applies to all years (default)
+#   value     : the number (or text for meta).  Rates in PERCENT, shares as FRACTIONS, money in one unit
+#   notes     : free text, never read by the code (quote it if it contains commas)
+#
+# SECTIONS
+#   meta              country, country_code, currency_unit, base_year, horizon_years, curve_date
+#   history           nominal_gdp, debt_held_by_public, avg_cost_pct (REQUIRED for base_year),
+#                     gross_issuance (REQUIRED for base_year unless every not-in-ladder bucket has
+#                     base_outstanding), plus optional net_interest, fiscal_deficit, debt_maturing,
+#                     ngdp_growth_pct, primary_deficit_pct_gdp (the last two feed the 'current' defaults)
+#   bucket            per issuance bucket: maturity_years, price_tenor, in_ladder [, base_outstanding]
+#   issuance_mix      share of gross issuance going to each bucket (blank period = every year)
+#   maturity_ladder   amount & coupon_pct of EXISTING coupon debt maturing in each future year
+#   spot_curve        par yields today by tenor  (O/N, 1Y, 2Y, ... 30Y)
+#   implied_tp        term premium embedded in today's curve, by tenor (pp)
+#   static_tp         term premium to assume going forward, by tenor (pp)
+#   curve_param       on_wedge: pp the overnight rate sits below 1y expectations (0 = none)
+#
+# ASSUMPTIONS (growth, deficit, issuance composition, rate scenarios) are NOT in this file:
+# set them in the USER SETTINGS block at the top of debt_model.py.  When a setting there is
+# None the model falls back to the CURRENT values derived from this file:
+#   current nominal GDP growth = nominal_gdp[base_year] / nominal_gdp[base_year-1] - 1
+#                                (or give history item ngdp_growth_pct for base_year)
+#   current primary deficit    = (fiscal_deficit - net_interest) / nominal_gdp at base_year
+#                                (or give history item primary_deficit_pct_gdp for base_year)
+#   current issuance mix       = the issuance_mix block below
+#
+# UNITS HERE: USD billions, percent, fractions.
+# Sources (from the workbook): BEA (GDP), FiscalData/MSPD (debt, avg rates), Bloomberg security
+# file (ladder, issuance), Treasury par curve 28-Jul-2026, ACM-style term premium panel.
+# =============================================================================================
+section,item,sub_item,period,value,notes
+# ---------------------------------------------------------------------------------------------
+# META
+# ---------------------------------------------------------------------------------------------
+meta,country,,,United States,
+meta,country_code,,,US,"used as prefix for output files"
+meta,currency_unit,,,USD billions,"informational"
+meta,base_year,,,2026,"last fiscal year with data = year 0 of the projection"
+meta,horizon_years,,,10,"projection length; maturity_ladder must cover base_year+1 .. base_year+horizon"
+meta,curve_date,,,2026-07-28,"informational: date of the spot curve snapshot"
+# ---------------------------------------------------------------------------------------------
+# HISTORY  (only the base_year row of nominal_gdp / debt_held_by_public / avg_cost_pct /
+#           gross_issuance is REQUIRED; earlier years are used for the historical context table)
+# ---------------------------------------------------------------------------------------------
+history,nominal_gdp,,2016,18715,"Model!C6 / 4_Macro row 4"
+history,nominal_gdp,,2017,19479,
+history,nominal_gdp,,2018,20533,
+history,nominal_gdp,,2019,21381,
+history,nominal_gdp,,2020,21061,
+history,nominal_gdp,,2021,23315,
+history,nominal_gdp,,2022,25724,
+history,nominal_gdp,,2023,26950,
+history,nominal_gdp,,2024,28650,
+history,nominal_gdp,,2025,29980,
+history,nominal_gdp,,2026,31750,"REQUIRED: base-year nominal GDP (Model!M6 / C104)"
+history,debt_held_by_public,,2016,14168,"Model!C7 / 4_Macro row 12"
+history,debt_held_by_public,,2017,14667,
+history,debt_held_by_public,,2018,15750,
+history,debt_held_by_public,,2019,16801,
+history,debt_held_by_public,,2020,21019,
+history,debt_held_by_public,,2021,22284,
+history,debt_held_by_public,,2022,24299,
+history,debt_held_by_public,,2023,26330,
+history,debt_held_by_public,,2024,28210,
+history,debt_held_by_public,,2025,30150,
+history,debt_held_by_public,,2026,32290,"REQUIRED: starting debt stock (Model!M7 / C55)"
+history,avg_cost_pct,,2016,2.03,"published total marketable avg interest rate, 1_ByClass row 19"
+history,avg_cost_pct,,2017,2.00,
+history,avg_cost_pct,,2018,2.28,
+history,avg_cost_pct,,2019,2.42,
+history,avg_cost_pct,,2020,1.69,
+history,avg_cost_pct,,2021,1.38,
+history,avg_cost_pct,,2022,1.82,
+history,avg_cost_pct,,2023,2.92,
+history,avg_cost_pct,,2024,3.32,
+history,avg_cost_pct,,2025,3.36,
+history,avg_cost_pct,,2026,3.41,"REQUIRED: starting average cost of debt (Model!C97 = 1_ByClass!M19)"
+history,gross_issuance,,2026,12161.632,"REQUIRED: base-year gross issuance incl bills (Model!M21 / C58); x bills share = bills stock rolling next year"
+history,debt_maturing,,2026,10337.34,"optional, informational (Model!M19)"
+history,net_interest,,2016,240,"optional: official net interest outlays, 4_Macro row 8"
+history,net_interest,,2017,263,
+history,net_interest,,2018,325,
+history,net_interest,,2019,375,
+history,net_interest,,2020,345,
+history,net_interest,,2021,352,
+history,net_interest,,2022,475,
+history,net_interest,,2023,659,
+history,net_interest,,2024,882,
+history,net_interest,,2025,970,
+history,net_interest,,2026,1030,
+history,fiscal_deficit,,2016,585,"optional: total deficit incl interest, 4_Macro row 6"
+history,fiscal_deficit,,2017,665,
+history,fiscal_deficit,,2018,779,
+history,fiscal_deficit,,2019,984,
+history,fiscal_deficit,,2020,3132,
+history,fiscal_deficit,,2021,2772,
+history,fiscal_deficit,,2022,1375,
+history,fiscal_deficit,,2023,1695,
+history,fiscal_deficit,,2024,1833,
+history,fiscal_deficit,,2025,1865,
+history,fiscal_deficit,,2026,1915,
+# ---------------------------------------------------------------------------------------------
+# BUCKETS  (one block per issuance bucket; names must match issuance_mix)
+#   maturity_years : projection years until the cohort rolls over (bills=1, 2y note=2, FRN=2 ...)
+#   price_tenor    : curve tenor that prices it.  'O/N' = overnight expectations with NO term premium
+#                    (used for floaters); '1Y' = 1y forward + static TP (bills); '5Y' etc. for coupons
+#   in_ladder      : 1 if the base-year stock of this bucket is already inside maturity_ladder,
+#                    0 if not (US bills are NOT in the ladder, so their base stock is added separately)
+# ---------------------------------------------------------------------------------------------
+bucket,Bills,maturity_years,,1,
+bucket,Bills,price_tenor,,1Y,
+bucket,Bills,in_ladder,,0,"base-year bills = gross_issuance x share (Model!C59); or give base_outstanding"
+bucket,2Y,maturity_years,,2,
+bucket,2Y,price_tenor,,2Y,
+bucket,2Y,in_ladder,,1,
+bucket,3Y,maturity_years,,3,
+bucket,3Y,price_tenor,,3Y,
+bucket,3Y,in_ladder,,1,
+bucket,5Y,maturity_years,,5,
+bucket,5Y,price_tenor,,5Y,
+bucket,5Y,in_ladder,,1,
+bucket,7Y,maturity_years,,7,
+bucket,7Y,price_tenor,,7Y,
+bucket,7Y,in_ladder,,1,
+bucket,10Y,maturity_years,,10,
+bucket,10Y,price_tenor,,10Y,
+bucket,10Y,in_ladder,,1,
+bucket,20Y,maturity_years,,20,
+bucket,20Y,price_tenor,,20Y,
+bucket,20Y,in_ladder,,1,
+bucket,30Y,maturity_years,,30,
+bucket,30Y,price_tenor,,30Y,
+bucket,30Y,in_ladder,,1,
+bucket,FRN,maturity_years,,2,"US FRNs are 2-year floaters"
+bucket,FRN,price_tenor,,O/N,"priced off overnight expectations (Rates_Matrix row 15)"
+bucket,FRN,in_ladder,,1,
+# ---------------------------------------------------------------------------------------------
+# ISSUANCE MIX  (fraction of gross issuance; blank period = every year; add year-specific rows to vary)
+# Workbook Assumptions!B4:L12.  NOTE: these sum to 0.995 exactly as in the workbook.
+# ---------------------------------------------------------------------------------------------
+issuance_mix,Bills,,,0.620,
+issuance_mix,2Y,,,0.060,
+issuance_mix,3Y,,,0.065,
+issuance_mix,5Y,,,0.088,
+issuance_mix,7Y,,,0.049,
+issuance_mix,10Y,,,0.055,
+issuance_mix,20Y,,,0.015,
+issuance_mix,30Y,,,0.027,
+issuance_mix,FRN,,,0.016,
+# ---------------------------------------------------------------------------------------------
+# MATURITY LADDER  (existing COUPON debt as of the snapshot: amount maturing per fiscal year and its
+# weighted average coupon).  Workbook Assumptions!R7:T28 / Sheet4.  Years beyond the horizon are
+# ignored but kept here so the horizon can be extended.  The '2047+' bucket is omitted (no year).
+# ---------------------------------------------------------------------------------------------
+maturity_ladder,amount,,2027,3484.606,
+maturity_ladder,coupon_pct,,2027,2.96464200747776,
+maturity_ladder,amount,,2028,3738.618,
+maturity_ladder,coupon_pct,,2028,3.03323242370655,
+maturity_ladder,amount,,2029,2634.158,
+maturity_ladder,coupon_pct,,2029,3.20476495715139,
+maturity_ladder,amount,,2030,1953.761,
+maturity_ladder,coupon_pct,,2030,3.06795995006554,
+maturity_ladder,amount,,2031,2069.426,
+maturity_ladder,coupon_pct,,2031,2.9276268516004,
+maturity_ladder,amount,,2032,1204.224,
+maturity_ladder,coupon_pct,,2032,2.93882273978928,
+maturity_ladder,amount,,2033,1040.587,
+maturity_ladder,coupon_pct,,2033,3.64299897557821,
+maturity_ladder,amount,,2034,604.496,
+maturity_ladder,coupon_pct,,2034,3.77014922348535,
+maturity_ladder,amount,,2035,671.445,
+maturity_ladder,coupon_pct,,2035,3.92843568721191,
+maturity_ladder,amount,,2036,521.377,
+maturity_ladder,coupon_pct,,2036,3.83384336094611,
+maturity_ladder,amount,,2037,38.002,"beyond default horizon"
+maturity_ladder,coupon_pct,,2037,4.89086758591653,
+maturity_ladder,amount,,2038,48.025,
+maturity_ladder,coupon_pct,,2038,4.44137168141593,
+maturity_ladder,amount,,2039,106.119,
+maturity_ladder,coupon_pct,,2039,4.16449222099718,
+maturity_ladder,amount,,2040,322.029,
+maturity_ladder,coupon_pct,,2040,2.91710257461285,
+maturity_ladder,amount,,2041,513.648,
+maturity_ladder,coupon_pct,,2041,2.64029987462231,
+maturity_ladder,amount,,2042,407.878,
+maturity_ladder,coupon_pct,,2042,2.68612979861625,
+maturity_ladder,amount,,2043,357.954,
+maturity_ladder,coupon_pct,,2043,3.37590269978824,
+maturity_ladder,amount,,2044,363.517,
+maturity_ladder,coupon_pct,,2044,3.82585614978117,
+maturity_ladder,amount,,2045,368.462,
+maturity_ladder,coupon_pct,,2045,3.67899267767097,
+maturity_ladder,amount,,2046,317.215,
+maturity_ladder,coupon_pct,,2046,3.41160254086345,
+# ---------------------------------------------------------------------------------------------
+# SPOT PAR CURVE  (%; Rates_Matrix!C5:K5, Treasury par 28-Jul-2026).  Any set of tenors works;
+# the code interpolates linearly and holds flat beyond the longest.  O/N is only used as the
+# 0-year anchor for sub-1y tenors; the model's overnight path comes from 1y expectations.
+# ---------------------------------------------------------------------------------------------
+spot_curve,O/N,,,3.63,
+spot_curve,1Y,,,4.08,
+spot_curve,2Y,,,4.25,
+spot_curve,3Y,,,4.31,
+spot_curve,5Y,,,4.40,
+spot_curve,7Y,,,4.55,
+spot_curve,10Y,,,4.70,
+spot_curve,20Y,,,5.20,
+spot_curve,30Y,,,5.20,
+# ---------------------------------------------------------------------------------------------
+# IMPLIED TERM PREMIUM TODAY (pp; Rates_Matrix!C8:K8).  Stripped out of the forwards.
+# ---------------------------------------------------------------------------------------------
+implied_tp,O/N,,,0.00,
+implied_tp,1Y,,,0.05,
+implied_tp,2Y,,,0.10,
+implied_tp,3Y,,,0.18,
+implied_tp,5Y,,,0.32,
+implied_tp,7Y,,,0.50,
+implied_tp,10Y,,,0.69,
+implied_tp,20Y,,,0.95,
+implied_tp,30Y,,,1.00,
+# ---------------------------------------------------------------------------------------------
+# STATIC TERM PREMIUM TO ASSUME (pp; Rates_Matrix!D11:K11).  Added back to the stripped forwards.
+# ---------------------------------------------------------------------------------------------
+static_tp,1Y,,,0.05,
+static_tp,2Y,,,0.19,
+static_tp,3Y,,,0.25,
+static_tp,5Y,,,0.40,
+static_tp,7Y,,,0.58,
+static_tp,10Y,,,0.70,
+static_tp,20Y,,,1.10,
+static_tp,30Y,,,1.10,
+curve_param,on_wedge,,,0.00,"Rates_Matrix!C12: pp the O/N sits below 1y expectations"

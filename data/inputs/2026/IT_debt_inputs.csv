@@ -1,0 +1,161 @@
+# Italy (IT) -- debt_model input file, vintage 2026, built 2026-10-21 by build_inputs.py from BBG_Data/grid_svrj5tqt.xlsx
+# Snapshot 2026-10-16; calendar-year buckets, base year 2026; EUR billions; rates in %; shares as fractions.
+# Format: section,item,sub_item,period,value,notes (lines starting with # are ignored). Assumptions live in debt_model.py / run_scenarios.py.
+# DATA NOTES / CAVEATS
+#  - debt = marketable central-government securities in the pull (148 coupon issues + 16 bills), domestic market only, deduped by ISIN;
+#    central-bank holdings stay inside the stock (Amount Outstanding is used; its gap to Amount Issued is buybacks)
+#  - linkers 233bn carried at real coupon + 2.0 pp inflation accrual; FRNs 133bn at current coupon
+#  - issuance_mix is ESTIMATED (no issue dates in the pull): each bond's issue date and original tenor come from market
+#    conventions (maturity day/month, ticker, tenor labels) and from the chronological order of CUSIP/SEDOL/ISIN numbers;
+#    composition = lines opened in the last 2 years (43 issues, 316bn/yr) by estimated original tenor; bills issuance = bills stock
+#    Override in run_scenarios.py / debt_model.py (ISSUANCE_MIX) if you have the debt office's issuance plan
+#  - curve: O/N = ECB deposit 2.50; 1Y = 12m BOT auction mid-Oct-2026; rest = on-the-run yields file
+#  - term premia: 5Y/10Y from country_macro_comparison (2026 columns), other tenors shaped with the US ACM-style profile; static TP = implied; the sovereign spread vs Bund (112 bp, TP Build tab) is added FLAT to every tenor rather than shaped
+#  - deficit: IMF GENERAL-government balance; primary deficit = that deficit minus modeled interest (avg cost x debt / GDP).
+#    General government is wider than the central-government debt stock here, so it overstates the central primary deficit
+#  - nominal GDP 2026 = World Bank 2025 level x (1 + 2025 growth); ngdp_growth_pct = 2025 y/y; ngdp_growth_trend_pct = 2016-25 CAGR
+section,item,sub_item,period,value,notes
+meta,country,,,Italy,
+meta,country_code,,,IT,
+meta,currency_unit,,,EUR billions,
+meta,base_year,,,2026,"calendar-year buckets; snapshot 2026-10-16"
+meta,horizon_years,,,10,
+meta,curve_date,,,2026-10-16,"bond pull date"
+history,nominal_gdp,,2015,1663.278,"World Bank WDI, current LCU"
+history,nominal_gdp,,2016,1704.857,
+history,nominal_gdp,,2024,2202.031,
+history,nominal_gdp,,2025,2258.049,
+history,nominal_gdp,,2026,2315.492,"EXTRAPOLATED: 2025 x (1 + 2025 y/y growth)"
+history,ngdp_growth_pct,,2026,2.5439,"latest y/y nominal growth; current-growth default"
+history,ngdp_growth_trend_pct,,2026,3.1717,"2016-2025 nominal GDP CAGR (World Bank); used by run_scenarios.py"
+history,debt_held_by_public,,2016,1758.719,"marketable central govt debt, SRCH as of 2016-12-31"
+history,debt_held_by_public,,2026,2676.255,"REQUIRED: marketable central govt debt, SRCH as of 2026-10-16"
+history,avg_cost_pct,,2026,3.1934,"REQUIRED: coupon-weighted 3.19% on coupon debt + bills at 1Y 3.18%"
+history,fiscal_deficit,,2016,40.917,"IMF general govt balance 2016 (-2.4% GDP) x GDP"
+history,fiscal_deficit,,2026,64.834,"IMF general govt balance 2026 (-2.8% GDP) x GDP"
+history,primary_deficit_pct_gdp,,2026,-0.8910,"= IMF GG deficit 2.8 minus modeled interest 3.69 % of GDP; current-deficit default"
+bucket,Bills,maturity_years,,1,
+bucket,Bills,price_tenor,,1Y,
+bucket,Bills,in_ladder,,0,"bills are not in the ladder; base stock below"
+bucket,Bills,base_outstanding,,139.428,"bills outstanding at snapshot"
+bucket,2Y,maturity_years,,2,
+bucket,2Y,price_tenor,,2Y,
+bucket,2Y,in_ladder,,1,
+bucket,3Y,maturity_years,,3,
+bucket,3Y,price_tenor,,3Y,
+bucket,3Y,in_ladder,,1,
+bucket,5Y,maturity_years,,5,
+bucket,5Y,price_tenor,,5Y,
+bucket,5Y,in_ladder,,1,
+bucket,7Y,maturity_years,,7,
+bucket,7Y,price_tenor,,7Y,
+bucket,7Y,in_ladder,,1,
+bucket,10Y,maturity_years,,10,
+bucket,10Y,price_tenor,,10Y,
+bucket,10Y,in_ladder,,1,
+bucket,20Y,maturity_years,,20,
+bucket,20Y,price_tenor,,20Y,
+bucket,20Y,in_ladder,,1,
+bucket,30Y,maturity_years,,30,
+bucket,30Y,price_tenor,,30Y,
+bucket,30Y,in_ladder,,1,
+bucket,FRN,maturity_years,,7,
+bucket,FRN,price_tenor,,O/N,
+bucket,FRN,in_ladder,,1,
+issuance_mix,Bills,,,0.312109,"estimated (see header)"
+issuance_mix,2Y,,,0.065673,
+issuance_mix,3Y,,,0.067533,
+issuance_mix,5Y,,,0.114988,
+issuance_mix,7Y,,,0.186196,
+issuance_mix,10Y,,,0.128949,
+issuance_mix,20Y,,,0.062837,
+issuance_mix,30Y,,,0.019292,
+issuance_mix,FRN,,,0.042423,
+maturity_ladder,amount,,2027,283.006,"includes maturities between snapshot and year-end"
+maturity_ladder,coupon_pct,,2027,2.8253,
+maturity_ladder,amount,,2028,261.195,
+maturity_ladder,coupon_pct,,2028,2.8797,
+maturity_ladder,amount,,2029,247.820,
+maturity_ladder,coupon_pct,,2029,3.2987,
+maturity_ladder,amount,,2030,248.235,
+maturity_ladder,coupon_pct,,2030,2.7181,
+maturity_ladder,amount,,2031,246.388,
+maturity_ladder,coupon_pct,,2031,3.0134,
+maturity_ladder,amount,,2032,185.009,
+maturity_ladder,coupon_pct,,2032,2.6348,
+maturity_ladder,amount,,2033,192.165,
+maturity_ladder,coupon_pct,,2033,3.6042,
+maturity_ladder,amount,,2034,81.550,
+maturity_ladder,coupon_pct,,2034,4.3530,
+maturity_ladder,amount,,2035,131.469,
+maturity_ladder,coupon_pct,,2035,3.7347,
+maturity_ladder,amount,,2036,115.334,
+maturity_ladder,coupon_pct,,2036,3.1404,
+maturity_ladder,amount,,2037,77.620,
+maturity_ladder,coupon_pct,,2037,3.1029,
+maturity_ladder,amount,,2038,44.027,
+maturity_ladder,coupon_pct,,2038,3.3332,
+maturity_ladder,amount,,2039,56.589,
+maturity_ladder,coupon_pct,,2039,4.6086,
+maturity_ladder,amount,,2040,57.422,
+maturity_ladder,coupon_pct,,2040,4.1720,
+maturity_ladder,amount,,2041,52.187,
+maturity_ladder,coupon_pct,,2041,3.4070,
+maturity_ladder,amount,,2043,14.900,
+maturity_ladder,coupon_pct,,2043,4.4500,
+maturity_ladder,amount,,2044,20.483,
+maturity_ladder,coupon_pct,,2044,4.7500,
+maturity_ladder,amount,,2045,13.500,
+maturity_ladder,coupon_pct,,2045,1.5000,
+maturity_ladder,amount,,2046,33.554,
+maturity_ladder,coupon_pct,,2046,3.6419,
+maturity_ladder,amount,,2047,18.741,
+maturity_ladder,coupon_pct,,2047,2.7000,
+maturity_ladder,amount,,2048,19.881,
+maturity_ladder,coupon_pct,,2048,3.4500,
+maturity_ladder,amount,,2049,18.118,
+maturity_ladder,coupon_pct,,2049,3.8500,
+maturity_ladder,amount,,2050,16.835,
+maturity_ladder,coupon_pct,,2050,2.4500,
+maturity_ladder,amount,,2051,24.178,
+maturity_ladder,coupon_pct,,2051,1.8266,
+maturity_ladder,amount,,2052,9.102,
+maturity_ladder,coupon_pct,,2052,2.1500,
+maturity_ladder,amount,,2053,14.500,
+maturity_ladder,coupon_pct,,2053,4.5000,
+maturity_ladder,amount,,2054,15.750,
+maturity_ladder,coupon_pct,,2054,4.3000,
+maturity_ladder,amount,,2055,13.087,
+maturity_ladder,coupon_pct,,2055,4.6500,
+maturity_ladder,amount,,2056,4.150,
+maturity_ladder,coupon_pct,,2056,4.5500,
+maturity_ladder,amount,,2067,10.633,
+maturity_ladder,coupon_pct,,2067,2.8000,
+maturity_ladder,amount,,2072,9.400,
+maturity_ladder,coupon_pct,,2072,2.1500,
+spot_curve,O/N,,,2.500,
+spot_curve,1Y,,,3.180,
+spot_curve,2.9Y,,,3.713,
+spot_curve,4.6Y,,,3.973,
+spot_curve,6.9Y,,,4.254,
+spot_curve,9.7Y,,,4.517,
+spot_curve,15Y,,,4.838,
+spot_curve,29Y,,,5.110,
+implied_tp,O/N,,,0.000,
+implied_tp,1Y,,,1.177,
+implied_tp,2Y,,,1.231,
+implied_tp,3Y,,,1.316,
+implied_tp,5Y,,,1.465,"EUR OIS TP + BTP–Bund sprd (164bp '16; 112bp Oct-26) — incl. sovereign premium"
+implied_tp,7Y,,,1.596,
+implied_tp,10Y,,,1.793,
+implied_tp,20Y,,,2.045,
+implied_tp,30Y,,,2.094,
+static_tp,1Y,,,1.177,
+static_tp,2Y,,,1.231,
+static_tp,3Y,,,1.316,
+static_tp,5Y,,,1.465,
+static_tp,7Y,,,1.596,
+static_tp,10Y,,,1.793,
+static_tp,20Y,,,2.045,
+static_tp,30Y,,,2.094,
+curve_param,on_wedge,,,0,

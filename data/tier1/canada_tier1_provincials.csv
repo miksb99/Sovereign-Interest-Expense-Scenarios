@@ -1,0 +1,56 @@
+issuer,fy_end_mar,total_debt_cad_bn,budget_balance_cad_bn,wam_years,spread_bp_throughcycle,spread_bp_current_oct2026,debt_measure
+Ontario,2016,327,-5.0,10.1,70,45,OFA total debt (incl OEFC; bonds+bills; ~98% publicly held)
+Ontario,2017,332,-1.0,10.2,70,45,OFA total debt
+Ontario,2018,349,-3.7,10.4,70,45,OFA total debt
+Ontario,2019,354,-7.4,10.5,70,45,OFA total debt
+Ontario,2020,370,-8.7,10.7,70,45,OFA total debt
+Ontario,2021,402,-16.4,10.8,70,45,OFA total debt
+Ontario,2022,408,2.1,10.9,70,45,OFA total debt
+Ontario,2023,428,-5.9,11.2,70,45,OFA total debt
+Ontario,2024,438,-0.6,11.4,70,45,OFA total debt (published 437.7)
+Ontario,2025,457,-1.1,11.7,70,45,OFA total debt
+Ontario,2026,480,-14.6,11.7,70,45,forecast (Budget 2025; balance is plan incl reserve)
+Quebec,2016,203,2.2,12.0,72,48,Gross debt (excl Hydro-Quebec ~C$50bn guaranteed; net of Generations Fund)
+Quebec,2017,205,2.4,11.0,72,48,Gross debt
+Quebec,2018,201,2.6,11.0,72,48,Gross debt (published 201.1)
+Quebec,2019,199,4.8,11.0,72,48,Gross debt (accounting reform lowers level)
+Quebec,2020,198,0.0,11.0,72,48,Gross debt
+Quebec,2021,210,-7.5,11.0,72,48,Gross debt (published 210.1)
+Quebec,2022,215,-0.5,11.5,72,48,Gross debt (published 215.3)
+Quebec,2023,221,-6.1,12.0,72,48,Gross debt (40.2% of GDP)
+Quebec,2024,242,-6.3,11.3,72,48,Gross debt (interpolated between published 221 and 273)
+Quebec,2025,258,-10.4,11.3,72,48,Gross debt (interpolated)
+Quebec,2026,273,-12.4,11.3,72,48,Gross debt (Budget 2026 published 272.6)
+Alberta,2016,20,-6.4,8.5,78,55,Taxpayer-supported debt (excl self-supported ~C$5-10bn)
+Alberta,2017,33,-10.8,8.5,78,55,Taxpayer-supported debt
+Alberta,2018,43,-8.0,9.0,78,55,Taxpayer-supported debt
+Alberta,2019,56,-6.7,9.0,78,55,Taxpayer-supported debt
+Alberta,2020,63,-12.2,9.0,78,55,Taxpayer-supported debt
+Alberta,2021,93,-17.0,9.5,78,55,Taxpayer-supported debt (incl ~C$8bn pre-funding)
+Alberta,2022,91,3.9,9.5,78,55,Taxpayer-supported debt
+Alberta,2023,79,11.6,9.5,78,55,Taxpayer-supported debt (after C$13.4bn repayment)
+Alberta,2024,82,4.3,9.5,78,55,Taxpayer-supported debt (published 81.8)
+Alberta,2025,85,5.8,9.5,78,55,Taxpayer-supported debt
+Alberta,2026,93,-5.2,9.5,78,55,forecast (Budget 2025)
+British Columbia,2016,65,0.7,10.0,65,50,Total provincial debt (taxpayer- + self-supported; BC borrows for BC Hydro on its own name)
+British Columbia,2017,66,2.7,10.0,65,50,Total provincial debt
+British Columbia,2018,65,0.3,10.0,65,50,Total provincial debt
+British Columbia,2019,66,1.5,10.0,65,50,Total provincial debt
+British Columbia,2020,71,-0.3,10.0,65,50,Total provincial debt
+British Columbia,2021,87,-5.5,10.0,65,50,Total provincial debt
+British Columbia,2022,90,1.3,10.0,65,50,Total provincial debt
+British Columbia,2023,90,0.7,10.0,65,50,Total provincial debt
+British Columbia,2024,108,-5.0,10.0,65,50,Total provincial debt (TS 75.4 + self-supported ~32)
+British Columbia,2025,134,-8.1,10.0,65,50,Total provincial debt (published 133.9; TS 99.1)
+British Columbia,2026,154,-7.7,10.0,65,50,Total provincial debt (published 154.1; balance is Public Accounts actual)
+AGGREGATE,2016,615,-8.5,11.0,70,47,Sum of four; WAM and spread are 2025-debt-weighted
+AGGREGATE,2017,636,-6.7,11.0,70,47,
+AGGREGATE,2018,658,-8.8,11.0,70,47,
+AGGREGATE,2019,675,-7.8,11.0,70,47,
+AGGREGATE,2020,702,-21.2,11.0,70,47,
+AGGREGATE,2021,792,-46.4,11.0,70,47,
+AGGREGATE,2022,803,7.3,11.0,70,47,
+AGGREGATE,2023,818,0.3,11.0,70,47,
+AGGREGATE,2024,870,-7.6,11.0,70,47,
+AGGREGATE,2025,934,-13.8,11.0,70,47,
+AGGREGATE,2026,1000,-39.9,11.0,70,47,2026 balances are a mix of actuals (BC) and budget plans (ON/QC/AB)

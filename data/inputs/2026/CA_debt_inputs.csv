@@ -1,0 +1,141 @@
+# Canada (CA) -- debt_model input file, vintage 2026, built 2026-10-21 by build_inputs.py from BBG_Data/grid_qcuqtidc.xlsx
+# Snapshot 2026-10-16; calendar-year buckets, base year 2026; CAD billions; rates in %; shares as fractions.
+# Format: section,item,sub_item,period,value,notes (lines starting with # are ignored). Assumptions live in debt_model.py / run_scenarios.py.
+# DATA NOTES / CAVEATS
+#  - debt = marketable central-government securities in the pull (57 coupon issues + 20 bills), domestic market only, deduped by ISIN;
+#    central-bank holdings stay inside the stock (Amount Outstanding is used; its gap to Amount Issued is buybacks)
+#  - linkers 0bn carried at real coupon + 2.0 pp inflation accrual; FRNs 0bn at current coupon
+#  - issuance_mix is ESTIMATED (no issue dates in the pull): each bond's issue date and original tenor come from market
+#    conventions (maturity day/month, ticker, tenor labels) and from the chronological order of CUSIP/SEDOL/ISIN numbers;
+#    composition = lines opened in the last 2 years (24 issues, 311bn/yr) by estimated original tenor; bills issuance = bills stock
+#    Override in run_scenarios.py / debt_model.py (ISSUANCE_MIX) if you have the debt office's issuance plan
+#  - curve: O/N = BoC 2.25; 1Y = 1y T-bill 14-Oct-2026; rest = on-the-run yields file
+#  - term premia: 5Y/10Y from country_macro_comparison (2026 columns), other tenors shaped with the US ACM-style profile; static TP = implied
+#  - deficit: IMF GENERAL-government balance; primary deficit = that deficit minus modeled interest (avg cost x debt / GDP).
+#    General government is wider than the central-government debt stock here, so it overstates the central primary deficit
+#  - nominal GDP 2026 = World Bank 2025 level x (1 + 2025 growth); ngdp_growth_pct = 2025 y/y; ngdp_growth_trend_pct = 2016-25 CAGR
+section,item,sub_item,period,value,notes
+meta,country,,,Canada,
+meta,country_code,,,CA,
+meta,currency_unit,,,CAD billions,
+meta,base_year,,,2026,"calendar-year buckets; snapshot 2026-10-16"
+meta,horizon_years,,,10,
+meta,curve_date,,,2026-10-16,"bond pull date"
+history,nominal_gdp,,2015,1990.444,"World Bank WDI, current LCU"
+history,nominal_gdp,,2016,2025.535,
+history,nominal_gdp,,2024,3108.551,
+history,nominal_gdp,,2025,3243.465,
+history,nominal_gdp,,2026,3384.234,"EXTRAPOLATED: 2025 x (1 + 2025 y/y growth)"
+history,ngdp_growth_pct,,2026,4.3401,"latest y/y nominal growth; current-growth default"
+history,ngdp_growth_trend_pct,,2026,5.3704,"2016-2025 nominal GDP CAGR (World Bank); used by run_scenarios.py"
+history,debt_held_by_public,,2016,588.434,"marketable central govt debt, SRCH as of 2016-03-31"
+history,debt_held_by_public,,2026,1560.254,"REQUIRED: marketable central govt debt, SRCH as of 2026-10-16"
+history,avg_cost_pct,,2026,2.7583,"REQUIRED: coupon-weighted 2.72% on coupon debt + bills at 1Y 2.93%"
+history,fiscal_deficit,,2016,10.128,"IMF general govt balance 2016 (-0.5% GDP) x GDP"
+history,fiscal_deficit,,2026,91.374,"IMF general govt balance 2026 (-2.7% GDP) x GDP"
+history,primary_deficit_pct_gdp,,2026,1.4283,"= IMF GG deficit 2.7 minus modeled interest 1.27 % of GDP; current-deficit default"
+bucket,Bills,maturity_years,,1,
+bucket,Bills,price_tenor,,1Y,
+bucket,Bills,in_ladder,,0,"bills are not in the ladder; base stock below"
+bucket,Bills,base_outstanding,,303.200,"bills outstanding at snapshot"
+bucket,2Y,maturity_years,,2,
+bucket,2Y,price_tenor,,2Y,
+bucket,2Y,in_ladder,,1,
+bucket,3Y,maturity_years,,3,
+bucket,3Y,price_tenor,,3Y,
+bucket,3Y,in_ladder,,1,
+bucket,5Y,maturity_years,,5,
+bucket,5Y,price_tenor,,5Y,
+bucket,5Y,in_ladder,,1,
+bucket,7Y,maturity_years,,7,
+bucket,7Y,price_tenor,,7Y,
+bucket,7Y,in_ladder,,1,
+bucket,10Y,maturity_years,,10,
+bucket,10Y,price_tenor,,10Y,
+bucket,10Y,in_ladder,,1,
+bucket,20Y,maturity_years,,20,
+bucket,20Y,price_tenor,,20Y,
+bucket,20Y,in_ladder,,1,
+bucket,30Y,maturity_years,,30,
+bucket,30Y,price_tenor,,30Y,
+bucket,30Y,in_ladder,,1,
+bucket,FRN,maturity_years,,2,
+bucket,FRN,price_tenor,,O/N,
+bucket,FRN,in_ladder,,1,
+issuance_mix,Bills,,,0.493266,"estimated (see header)"
+issuance_mix,2Y,,,0.174650,
+issuance_mix,3Y,,,0.000000,
+issuance_mix,5Y,,,0.127709,
+issuance_mix,7Y,,,0.000000,
+issuance_mix,10Y,,,0.144384,
+issuance_mix,20Y,,,0.000000,
+issuance_mix,30Y,,,0.059991,
+issuance_mix,FRN,,,0.000000,
+maturity_ladder,amount,,2027,158.955,"includes maturities between snapshot and year-end"
+maturity_ladder,coupon_pct,,2027,2.5248,
+maturity_ladder,amount,,2028,152.925,
+maturity_ladder,coupon_pct,,2028,2.7241,
+maturity_ladder,amount,,2029,84.899,
+maturity_ladder,coupon_pct,,2029,3.6852,
+maturity_ladder,amount,,2030,159.200,
+maturity_ladder,coupon_pct,,2030,1.7682,
+maturity_ladder,amount,,2031,156.000,
+maturity_ladder,coupon_pct,,2031,2.2212,
+maturity_ladder,amount,,2032,53.500,
+maturity_ladder,coupon_pct,,2032,2.4019,
+maturity_ladder,amount,,2033,51.989,
+maturity_ladder,coupon_pct,,2033,3.6438,
+maturity_ladder,amount,,2034,70.000,
+maturity_ladder,coupon_pct,,2034,3.1500,
+maturity_ladder,amount,,2035,81.000,
+maturity_ladder,coupon_pct,,2035,3.2500,
+maturity_ladder,amount,,2036,63.000,
+maturity_ladder,coupon_pct,,2036,3.3294,
+maturity_ladder,amount,,2037,14.231,
+maturity_ladder,coupon_pct,,2037,4.8595,
+maturity_ladder,amount,,2041,13.838,
+maturity_ladder,coupon_pct,,2041,4.0000,
+maturity_ladder,amount,,2045,16.300,
+maturity_ladder,coupon_pct,,2045,3.5000,
+maturity_ladder,amount,,2048,14.900,
+maturity_ladder,coupon_pct,,2048,2.7500,
+maturity_ladder,amount,,2051,51.817,
+maturity_ladder,coupon_pct,,2051,2.0000,
+maturity_ladder,amount,,2053,32.000,
+maturity_ladder,coupon_pct,,2053,1.7500,
+maturity_ladder,amount,,2055,28.750,
+maturity_ladder,coupon_pct,,2055,2.7500,
+maturity_ladder,amount,,2056,1.000,
+maturity_ladder,coupon_pct,,2056,3.5000,
+maturity_ladder,amount,,2057,35.000,
+maturity_ladder,coupon_pct,,2057,3.5000,
+maturity_ladder,amount,,2059,9.000,
+maturity_ladder,coupon_pct,,2059,3.7500,
+maturity_ladder,amount,,2064,8.750,
+maturity_ladder,coupon_pct,,2064,2.7500,
+spot_curve,O/N,,,2.250,
+spot_curve,1Y,,,2.930,
+spot_curve,1.8Y,,,3.322,
+spot_curve,4.9Y,,,3.618,
+spot_curve,6.6Y,,,3.719,
+spot_curve,9.6Y,,,3.890,
+spot_curve,19.1Y,,,4.096,
+spot_curve,31.1Y,,,4.194,
+implied_tp,O/N,,,0.000,
+implied_tp,1Y,,,0.066,
+implied_tp,2Y,,,0.132,
+implied_tp,3Y,,,0.237,
+implied_tp,5Y,,,0.422,"CAD OIS decomposition (user sheet)"
+implied_tp,7Y,,,0.505,
+implied_tp,10Y,,,0.629,
+implied_tp,20Y,,,0.866,
+implied_tp,30Y,,,0.912,
+static_tp,1Y,,,0.066,
+static_tp,2Y,,,0.132,
+static_tp,3Y,,,0.237,
+static_tp,5Y,,,0.422,
+static_tp,7Y,,,0.505,
+static_tp,10Y,,,0.629,
+static_tp,20Y,,,0.866,
+static_tp,30Y,,,0.912,
+curve_param,on_wedge,,,0,

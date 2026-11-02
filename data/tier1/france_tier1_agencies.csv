@@ -1,0 +1,89 @@
+issuer,cal_year_end,total_debt_eur_bn,net_debt_change_eur_bn,wam_years,spread_bp_throughcycle,spread_bp_current_oct2026,notes
+CADES,2016,135.8,-14.1,5.0,25,20,Debt remaining to amortize (CRDS/CSG revenue ~16-19bn/yr); hard numbers from Senat/CADES
+CADES,2017,120.8,-15.0,5.0,25,20,
+CADES,2018,105.3,-15.5,5.0,25,20,
+CADES,2019,89.1,-16.2,5.0,25,20,published
+CADES,2020,93.0,3.9,5.0,25,20,COVID: 136bn transfer program begins (20bn in 2020)
+CADES,2021,115.0,22.0,5.0,25,20,+40bn transfer
+CADES,2022,136.0,21.0,5.0,25,20,+40bn transfer; borrowing program 38.1bn
+CADES,2023,145.0,9.0,5.0,25,20,+27.2bn transfer
+CADES,2024,138.0,-7.0,5.0,25,20,+8.8bn transfer - 16bn amortized
+CADES,2025,121.7,-16.3,5.0,25,20,published; 274.8bn amortized since 1996; sunset 2033
+CADES,2026,121.0,-0.7,5.0,25,20,LFSS 2026: new 15bn transfer vs ~16bn amortization
+UNEDIC,2016,29.8,2.6,6.5,25,22,Net debt; unemployment insurance; COVID bonds carry explicit state guarantee
+UNEDIC,2017,33.6,3.8,6.5,25,22,
+UNEDIC,2018,35.6,2.0,6.5,25,22,
+UNEDIC,2019,36.8,1.2,6.5,25,22,
+UNEDIC,2020,54.7,17.9,6.5,25,22,
+UNEDIC,2021,63.6,8.9,6.5,25,22,peak
+UNEDIC,2022,60.7,-2.9,6.5,25,22,surpluses begin but state siphons receipts
+UNEDIC,2023,59.8,-0.9,6.5,25,22,
+UNEDIC,2024,57.5,-2.3,6.5,25,22,
+UNEDIC,2025,56.0,-1.5,6.5,25,22,
+UNEDIC,2026,55.0,-1.0,6.5,25,22,
+ACOSS,2016,18,2,0.3,8,8,URSSAF Caisse Nationale; year-end net short-term debt (Euro CP + BMTN bills); intra-year peaks much higher
+ACOSS,2017,22,4,0.3,8,8,
+ACOSS,2018,24,2,0.3,8,8,
+ACOSS,2019,26,2,0.3,8,8,
+ACOSS,2020,65,39,0.3,8,8,intra-year peak ~90bn before CADES takeover
+ACOSS,2021,40,-25,0.3,8,8,
+ACOSS,2022,20,-20,0.3,8,8,
+ACOSS,2023,35,15,0.3,8,8,social deficit returns with no CADES capacity
+ACOSS,2024,55,20,0.3,8,8,secu deficit -15.3bn 2024
+ACOSS,2025,70,15,0.3,8,8,secu deficit -21.6bn 2025 (published)
+ACOSS,2026,75,5,0.3,8,8,partial relief from 15bn CADES transfer
+SFILFR_CAFFIL,2016,60,0,6.5,30,25,Covered bonds (CAFFIL) + SFIL senior; refinances local-govt + export loans; asset-backed so self-servicing
+SFILFR_CAFFIL,2017,61,1,6.5,30,25,
+SFILFR_CAFFIL,2018,62,1,6.5,30,25,
+SFILFR_CAFFIL,2019,63,1,6.5,30,25,
+SFILFR_CAFFIL,2020,64,1,6.5,30,25,
+SFILFR_CAFFIL,2021,65,1,6.5,30,25,
+SFILFR_CAFFIL,2022,66,1,6.5,30,25,
+SFILFR_CAFFIL,2023,66,0,6.5,30,25,
+SFILFR_CAFFIL,2024,67,1,6.5,30,25,
+SFILFR_CAFFIL,2025,68,1,6.5,30,25,
+SFILFR_CAFFIL,2026,68,0,6.5,30,25,
+BPIFRA,2016,15,2,4.5,30,28,EPIC BPI + Bpifrance Financement bonds; development bank with offsetting loan book
+BPIFRA,2017,17,2,4.5,30,28,
+BPIFRA,2018,20,3,4.5,30,28,
+BPIFRA,2019,24,4,4.5,30,28,
+BPIFRA,2020,28,4,4.5,30,28,
+BPIFRA,2021,30,2,4.5,30,28,
+BPIFRA,2022,32,2,4.5,30,28,
+BPIFRA,2023,34,2,4.5,30,28,
+BPIFRA,2024,36,2,4.5,30,28,
+BPIFRA,2025,38,2,4.5,30,28,
+BPIFRA,2026,39,1,4.5,30,28,
+AGFRNC,2016,1.5,0.7,7.0,40,35,Agence France Locale; joint local-govt funding agency; growing from small base
+AGFRNC,2017,2.5,1.0,7.0,40,35,
+AGFRNC,2018,3.5,1.0,7.0,40,35,
+AGFRNC,2019,4.5,1.0,7.0,40,35,
+AGFRNC,2020,5.5,1.0,7.0,40,35,
+AGFRNC,2021,6.5,1.0,7.0,40,35,
+AGFRNC,2022,7.5,1.0,7.0,40,35,
+AGFRNC,2023,9.0,1.5,7.0,40,35,
+AGFRNC,2024,10.0,1.0,7.0,40,35,
+AGFRNC,2025,11.0,1.0,7.0,40,35,
+AGFRNC,2026,12.0,1.0,7.0,40,35,
+IDFMOB,2016,0.0,0.0,12.0,45,40,Ile-de-France Mobilites; green bonds for Grand Paris rolling stock; long-dated
+IDFMOB,2017,0.0,0.0,12.0,45,40,
+IDFMOB,2018,0.5,0.5,12.0,45,40,
+IDFMOB,2019,0.5,0.0,12.0,45,40,
+IDFMOB,2020,1.0,0.5,12.0,45,40,
+IDFMOB,2021,2.0,1.0,12.0,45,40,
+IDFMOB,2022,3.0,1.0,12.0,45,40,
+IDFMOB,2023,4.0,1.0,12.0,45,40,
+IDFMOB,2024,5.0,1.0,12.0,45,40,
+IDFMOB,2025,5.5,0.5,12.0,45,40,
+IDFMOB,2026,6.0,0.5,12.0,45,40,
+AGGREGATE,2016,260,-7,4.7,24,21,Sum of seven; WAM/spread 2025-debt-weighted
+AGGREGATE,2017,257,-3,4.7,24,21,
+AGGREGATE,2018,251,-6,4.7,24,21,
+AGGREGATE,2019,244,-7,4.7,24,21,
+AGGREGATE,2020,311,67,4.7,24,21,
+AGGREGATE,2021,322,11,4.7,24,21,
+AGGREGATE,2022,325,3,4.7,24,21,
+AGGREGATE,2023,353,28,4.7,24,21,
+AGGREGATE,2024,368,15,4.7,24,21,
+AGGREGATE,2025,370,2,4.7,24,21,
+AGGREGATE,2026,376,6,4.7,24,21,projection
