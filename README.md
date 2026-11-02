@@ -11,13 +11,13 @@ The key deliverable is **[`outputs/Scenario_Summary.pdf`](outputs/Scenario_Summa
 ## Contents
 
 1. [Approach & Key Findings](#1-approach--key-findings)
-   1.1 [The engine](#11-the-engine)
-   1.2 [Where the burden stands today (2022 → 2026)](#12-where-the-burden-stands-today-2022--2026)
-   1.3 [Where it can go by 2036](#13-where-it-can-go-by-2036)
-   1.4 [What the ratio is most sensitive to](#14-what-the-ratio-is-most-sensitive-to)
-   1.5 [The bull case: level and direction of travel](#15-the-bull-case-level-and-direction-of-travel)
-   1.6 [Country readings](#16-country-readings)
-   1.7 [Two things to keep in mind when quoting the numbers](#17-two-things-to-keep-in-mind-when-quoting-the-numbers)
+   1.1 [The model in brief](#11-the-model-in-brief)
+   1.2 [Country readings](#12-country-readings)
+   1.3 [Two things to keep in mind when quoting the numbers](#13-two-things-to-keep-in-mind-when-quoting-the-numbers)
+   1.4 [Where the burden stands today (2022 → 2026)](#14-where-the-burden-stands-today-2022--2026)
+   1.5 [Where it can go by 2036](#15-where-it-can-go-by-2036)
+   1.6 [What the ratio is most sensitive to](#16-what-the-ratio-is-most-sensitive-to)
+   1.7 [The bull case: level and direction of travel](#17-the-bull-case-level-and-direction-of-travel)
 2. [The Four Scenarios](#2-the-four-scenarios)
 3. [Data](#3-data)
 4. [Code & Workflow](#4-code--workflow)
@@ -31,17 +31,36 @@ The key deliverable is **[`outputs/Scenario_Summary.pdf`](outputs/Scenario_Summa
 
 ## 1. Approach & Key Findings
 
-### 1.1 The engine
+### 1.1 The model in brief
 
-The model is a **cohort roll-forward** of each country's marketable central-government debt, written in Python (polars) and validated line by line against an Excel original of the US model (`model/validate_us_model.py`: all exact checks pass).
+The model is a **cohort roll-forward** of each country's marketable central-government debt, written in Python (polars) and validated line by line against an Excel original of the US model (`model/validate_us_model.py`: all exact checks pass). Each year the government refinances the bonds that mature (from a maturity ladder measured bond by bond), borrows the primary deficit and last year's interest, and prices the new issuance at the **market-implied forward rate** for the tenors it actually issues. The average cost of the stock updates as old coupons leave and new ones arrive; interest divided by nominal GDP is the output.
 
-Each year the government must refinance the bonds maturing that year (from the measured maturity ladder) plus the cohorts the model itself issued earlier, and borrow the primary deficit and last year's interest. Gross issuance is split by the country's estimated issuance composition and priced at that tenor's **market-implied forward rate** for that year (the forward implied by today's spot curve, with the term premium embedded in the forwards stripped out and today's static premium added back). The average cost of the stock updates as old coupons leave and new ones arrive; interest = average cost × average debt; the ratio divides by nominal GDP.
+Nine countries are run on October 2026 Bloomberg security-level inputs (and on 2016 inputs for a back-test). A **tier-1 overlay** adds the sub-sovereign debt national screens miss: Canadian provinces, Australian states, Chinese local-government bonds and LGFVs (bonds and loans), German Länder, French social-security agencies and Italian quasi-sovereigns. Four **joint scenarios** move growth, the primary balance, the yield curve and tier 1 together (section 2): **base** (market pricing), **bull** (an AI boom, then disinflation), **bear** (inflation persists, higher for longer) and **financial repression** (inflation of 3–4% with the curve engineered down). The evidence behind the readings in 1.2 and 1.3 follows in 1.4 to 1.7.
 
-Nine countries are run on 2026 inputs built from Bloomberg security-level pulls of every live bond and bill, and again on 2016 inputs for a back-test. A **tier-1 overlay** adds the sub-sovereign stock that national screens leave out: Canadian provinces, Australian states, Chinese local-government bonds and LGFVs (bonds and, unusually, bank and trust loans), German Länder, French social-security agencies (CADES, Unédic, ACOSS) and Italian quasi-sovereigns. Where tier 1 exists the sovereign runs on a central-only primary balance so sub-national borrowing is counted once.
+### 1.2 Country readings
 
-Four **joint scenarios** move growth, the primary balance, the yield curve and the tier-1 settings together (section 2): **base** (market pricing), **bull** (an AI boom, then disinflation), **bear** (inflation persists, higher for longer) and **financial repression** (inflation of 3–4% with the curve engineered down). A separate 27-cell lever grid isolates each assumption on its own.
+*The numbers quoted here are from the tables and charts in 1.4 to 1.7.*
 
-### 1.2 Where the burden stands today (2022 → 2026)
+**United States.** The US is making a two-part bet: that an AI capex boom delivers, and that the proceeds are banked rather than spent. On the way there it carries the fastest-repricing stock in the sample and the only front-end-driven interest bill, which gives the Treasury the strongest incentive anywhere to have the policy rate lower. If the boom disappoints, the base case is a 6% bill and the exits are a surplus or repression, and repression in the US runs through the captive demand the dollar's reserve role supplies.
+
+**China.** Repression has been running for years and has only held the bill flat, because the local-government stock compounds faster than the rate falls. Savers are being asked to subsidise local government indefinitely rather than through a transition. The bear case (the yield cap failing by 150 bp) is modelled as a smooth glide; administered-rate regimes do not usually fail smoothly. Because the model includes LGFV bonds and loans, its China figures are far higher than the official general-government measure, which excludes them.
+
+**Europe.** France and Italy have the greatest *need* for financial repression and the greatest institutional *obstacle* to it: in the euro area it is an ECB decision, and it means German savers absorbing negative real returns on Bunds they did not need to issue. Germany's own base case is manageable without it. France has Italy's debt dynamics without Italy's primary surplus; its best domestic outcome (the bull) ends in the same place as the ECB repression it cannot choose. Italy's surplus stops its stock growing but cannot stop the stock repricing, which is why its path is the flattest of the high-debt three. The UK sits outside this: repression there would be a national choice, and the slowest-repricing stock in the sample buys it time.
+
+**Canada and Australia.** The sovereigns are sound; the growth is in provinces and states that borrow long and heavily offshore, and whose backstop in 2020 was an emergency facility rather than a standing one. Tier 1 is 40–50% of their consolidated bill and Australia's states are the fastest-growing stock anywhere. A global demand shock would reach them through the long end of paper the federal government did not issue. On carrying capacity, note that interest-to-revenue cuts the other way from interest-to-GDP: broad government revenue is about 41% of GDP in Canada and 36% in Australia against 30% in the US, so the US is the stretched one on that metric, not them.
+
+**Denmark.** The bull case retires the entire stock by 2035; even the base case shrinks it. Nothing in the model troubles Denmark; its exposure is trade, which the model does not see.
+
+**r versus g.** Today only Italy has an average cost above nominal growth. By 2036 the baseline puts the US and France past that threshold as well. For an own-currency sovereign r > g is a chronic condition eroded through inflation and paid by savers; for Italy it is latent-acute, with mandatory surpluses, no inflation exit, and a fat tail that only the ECB's conditional backstop keeps closed. Italy is not the outlier in this study; it is the preview.
+
+**The common thread.** Every one of the four stories resolves through the bondholder. The US asks the bondholder to wait for AI; China asks domestic savers to subsidise local government; Europe would ask German savers to subsidise France and Italy; Canada and Australia depend on foreign bondholders not leaving. The adjustment is being pushed onto creditors everywhere, and the differences between countries are about which creditors, whether they are captive, and whether they can leave.
+
+### 1.3 Two things to keep in mind when quoting the numbers
+
+- **These are coupon costs on marketable central-government debt, not general-government interest.** IMF and OECD general-government figures run higher: they add the accrued inflation uplift on index-linked debt (2.6% of GDP for the UK in 2022-23 alone), every level of government, and accrual items. For the US the model's 1.9% of GDP in 2022 matches CBO's net interest; the IMF's general-government figure for the same year is 3.1%. The model's definition is the one that reprices with the curve and is consistent from 2022 to 2036, but the levels will look low next to headline numbers. China is the exception in the other direction, because the model includes LGFV debt and the official measure does not.
+- **Two per cent is not a historical norm.** It was the ZIRP-era norm. G7 interest bills ran at 4–5% of GDP in the 1980s and 1990s, and the base cases here are a return to that world. The 2010s were the anomaly, and every country's debt structure was built during it.
+
+### 1.4 Where the burden stands today (2022 → 2026)
 
 ![Interest / GDP in 2022 and 2026](outputs/figures/then_vs_now.png)
 
@@ -63,7 +82,7 @@ Four **joint scenarios** move growth, the primary balance, the yield curve and t
 - **Italy's jump is repricing, not borrowing.** Its debt/GDP was flat; about half the stock rolled over, swapping 0–1% coupons for 3.5–4.5% BTPs. The primary surplus Italy now runs only started in 2024, after two years of Superbonus-driven deficits.
 - **China is the only country whose average rate fell.** Financial repression has worked on price (3.9% → 3.3%) but not on quantity: the local stock kept growing, so the bill stayed flat rather than improving.
 
-### 1.3 Where it can go by 2036
+### 1.5 Where it can go by 2036
 
 ![How interest expense over GDP can develop by 2036](outputs/figures/range_2036.png)
 
@@ -90,7 +109,7 @@ Four **joint scenarios** move growth, the primary balance, the yield curve and t
 - **Financial repression is the one case that holds the ratio near flat.** With the full easing cycle held, the long end capped and nominal growth a point higher, the US ends 2036 at 2.9%, France at 2.8% and Italy at 2.6%. It is Italy's best cell in the whole model and France's equal-best, and neither can choose it. Someone pays: a ten-year yield near 3.3% against 3.5–4% inflation is a negative real return to bondholders for a decade.
 - **The UK, Canada, Australia, Germany and Denmark are manageable in every case.** Their worst outcomes in 2036 are roughly where the US and France sit today.
 
-### 1.4 What the ratio is most sensitive to
+### 1.6 What the ratio is most sensitive to
 
 ![Sensitivity pies](outputs/figures/pies.png)
 
@@ -115,7 +134,7 @@ Four **joint scenarios** move growth, the primary balance, the yield curve and t
 - **A sensitivity is not a decomposition of a scenario.** The deficit is the US's weakest lever per unit, yet in the bull case it does as much work as the curve, because the bull moves the deficit by six points and the curve by about one on a ten-year average. Which assumption "mattered" depends on how far you chose to move it.
 - **Tier-1 WAM is immaterial everywhere.** Lengthening the sub-national book changes when repricing happens, not whether. Tier-1 growth and spread matter where the sub-national stock is large: China, Australia, Canada.
 
-### 1.5 The bull case: level and direction of travel
+### 1.7 The bull case: level and direction of travel
 
 ![Bull-case paths](outputs/figures/bull_paths.png)
 
@@ -135,27 +154,6 @@ Four **joint scenarios** move growth, the primary balance, the yield curve and t
 - **The boom alone is not enough.** The bull curve with the deficit held still leaves the US above 3% of GDP in 2036. What gets it to 2.2% is the primary balance turning to a surplus by 2030. The bet is therefore not that AI works, but that AI works *and* the revenue is used to close the deficit rather than spent, which did not happen after 2001.
 - **Phase 1 is expensive.** The US and France add 1–1.7 pt of GDP of interest by 2030 financing a boom at today's curve before any relief arrives. France is the only country whose bull level in 2036 sits a full point above today.
 - **Repricing speed and budget position pull in different directions.** The US average cost collapses from 4.3% to 3.0% because it rolls fast; the UK's only drifts from 3.8% to 3.3%. But the ratio's slope is set by the budget too: Italy, with a surplus and the largest cost drop in Europe, is the steepest faller; Australia is flat because its states keep borrowing through the cuts.
-
-### 1.6 Country readings
-
-**United States.** The US is making a two-part bet: that an AI capex boom delivers, and that the proceeds are banked rather than spent. On the way there it carries the fastest-repricing stock in the sample and the only front-end-driven interest bill, which gives the Treasury the strongest incentive anywhere to have the policy rate lower. If the boom disappoints, the base case is a 6% bill and the exits are a surplus or repression, and repression in the US runs through the captive demand the dollar's reserve role supplies.
-
-**China.** Repression has been running for years and has only held the bill flat, because the local-government stock compounds faster than the rate falls. Savers are being asked to subsidise local government indefinitely rather than through a transition. The bear case (the yield cap failing by 150 bp) is modelled as a smooth glide; administered-rate regimes do not usually fail smoothly. Because the model includes LGFV bonds and loans, its China figures are far higher than the official general-government measure, which excludes them.
-
-**Europe.** France and Italy have the greatest *need* for financial repression and the greatest institutional *obstacle* to it: in the euro area it is an ECB decision, and it means German savers absorbing negative real returns on Bunds they did not need to issue. Germany's own base case is manageable without it. France has Italy's debt dynamics without Italy's primary surplus; its best domestic outcome (the bull) ends in the same place as the ECB repression it cannot choose. Italy's surplus stops its stock growing but cannot stop the stock repricing, which is why its path is the flattest of the high-debt three. The UK sits outside this: repression there would be a national choice, and the slowest-repricing stock in the sample buys it time.
-
-**Canada and Australia.** The sovereigns are sound; the growth is in provinces and states that borrow long and heavily offshore, and whose backstop in 2020 was an emergency facility rather than a standing one. Tier 1 is 40–50% of their consolidated bill and Australia's states are the fastest-growing stock anywhere. A global demand shock would reach them through the long end of paper the federal government did not issue. On carrying capacity, note that interest-to-revenue cuts the other way from interest-to-GDP: broad government revenue is about 41% of GDP in Canada and 36% in Australia against 30% in the US, so the US is the stretched one on that metric, not them.
-
-**Denmark.** The bull case retires the entire stock by 2035; even the base case shrinks it. Nothing in the model troubles Denmark; its exposure is trade, which the model does not see.
-
-**r versus g.** Today only Italy has an average cost above nominal growth. By 2036 the baseline puts the US and France past that threshold as well. For an own-currency sovereign r > g is a chronic condition eroded through inflation and paid by savers; for Italy it is latent-acute, with mandatory surpluses, no inflation exit, and a fat tail that only the ECB's conditional backstop keeps closed. Italy is not the outlier in this study; it is the preview.
-
-**The common thread.** Every one of the four stories resolves through the bondholder. The US asks the bondholder to wait for AI; China asks domestic savers to subsidise local government; Europe would ask German savers to subsidise France and Italy; Canada and Australia depend on foreign bondholders not leaving. The adjustment is being pushed onto creditors everywhere, and the differences between countries are about which creditors, whether they are captive, and whether they can leave.
-
-### 1.7 Two things to keep in mind when quoting the numbers
-
-- **These are coupon costs on marketable central-government debt, not general-government interest.** IMF and OECD general-government figures run higher: they add the accrued inflation uplift on index-linked debt (2.6% of GDP for the UK in 2022-23 alone), every level of government, and accrual items. For the US the model's 1.9% of GDP in 2022 matches CBO's net interest; the IMF's general-government figure for the same year is 3.1%. The model's definition is the one that reprices with the curve and is consistent from 2022 to 2036, but the levels will look low next to headline numbers. China is the exception in the other direction, because the model includes LGFV debt and the official measure does not.
-- **Two per cent is not a historical norm.** It was the ZIRP-era norm. G7 interest bills ran at 4–5% of GDP in the 1980s and 1990s, and the base cases here are a return to that world. The 2010s were the anomaly, and every country's debt structure was built during it.
 
 ---
 
@@ -268,7 +266,7 @@ Requires Python 3.11+ and the packages in `requirements.txt` (polars, matplotlib
 
 ## 7. Glossary of Concepts
 
-- **Interest / GDP.** Interest expense on the modelled debt divided by nominal GDP. Here: average cost × average debt over the year, on marketable central-government securities plus the tier-1 blocks. Not the same as general-government interest in national accounts (section 1.7).
+- **Interest / GDP.** Interest expense on the modelled debt divided by nominal GDP. Here: average cost × average debt over the year, on marketable central-government securities plus the tier-1 blocks. Not the same as general-government interest in national accounts (section 1.3).
 - **Primary balance / primary deficit.** The budget balance before interest. The model uses the IMF general-government balance less its own modelled interest; where tier 1 exists it removes the sub-national sector's own balance to get a central-only figure. Sign convention in the files: + = deficit.
 - **Average cost of the stock.** Coupon-weighted average interest rate on the outstanding debt (bills at the 1-year rate). It moves only as debt matures and is replaced, which is why structure sets the speed of repricing.
 - **Market-implied forward rate.** The rate at which a tenor can be issued in a future year, implied by today's spot curve: f(h, m) = [y(h+m)(h+m) − y(h)h] / m, with the term premium embedded today stripped out and a static premium added back. The base case prices every future issue this way.
