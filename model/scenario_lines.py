@@ -599,8 +599,10 @@ def main() -> None:
 
     def gsplit(r):
         """'6.3 (3.3 + 3.0)' or, where the path changes, '6.3 (3.3 + 3.0) → 5.3 (3.8 + 1.5)'."""
-        a = f"{r['nominal_gdp_growth_pct']:.1f} ({r['real_growth_pct']:.1f} + {r['inflation_pct']:.1f})"
-        b = f"{r['nominal_gdp_growth_2036']:.1f} ({r['real_growth_2036']:.1f} + {r['inflation_2036']:.1f})"
+        def one(n, re_, inf):
+            return f"{n:.1f} ({re_:.1f} {'+' if inf >= 0 else '−'} {abs(inf):.1f})"
+        a = one(r["nominal_gdp_growth_pct"], r["real_growth_pct"], r["inflation_pct"])
+        b = one(r["nominal_gdp_growth_2036"], r["real_growth_2036"], r["inflation_2036"])
         return a if abs(r["nominal_gdp_growth_pct"] - r["nominal_gdp_growth_2036"]) < 0.05 else f"{a} → {b}"
 
     def assumptions_pages():
