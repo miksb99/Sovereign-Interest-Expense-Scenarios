@@ -28,6 +28,8 @@ history,nominal_gdp,,2025,3039.861,
 history,nominal_gdp,,2026,3195.896,"EXTRAPOLATED: 2025 x (1 + 2025 y/y growth)"
 history,ngdp_growth_pct,,2026,5.1330,"latest y/y nominal growth; current-growth default"
 history,ngdp_growth_trend_pct,,2026,4.7341,"2016-2025 nominal GDP CAGR (World Bank); used by run_scenarios.py"
+history,real_gdp_growth_pct,,2026,1.3884,"latest y/y real GDP growth (World Bank WDI, constant LCU, NY.GDP.MKTP.KN)"
+history,real_gdp_growth_trend_pct,,2026,1.2433,"2016-2025 real GDP CAGR (World Bank); run_scenarios.py splits nominal growth into real + inflation"
 history,debt_held_by_public,,2016,1441.251,"marketable central govt debt, SRCH as of 2016-03-31"
 history,debt_held_by_public,,2026,2776.054,"REQUIRED: marketable central govt debt, SRCH as of 2026-10-16"
 history,avg_cost_pct,,2026,3.0509,"REQUIRED: coupon-weighted 3.00% on coupon debt + bills at 1Y 4.50%"

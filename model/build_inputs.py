@@ -73,6 +73,19 @@ MARKET: dict[str, dict] = {
     "DK": {"O/N": 2.10, "1Y": 2.45, "2Y": 2.83, "5Y": 3.05, "10Y": 3.29, "30Y": 3.65},       # 2Y/10Y 19-Oct; 1Y,5Y,30Y interpolated
     "AU": {"O/N": 4.60, "1Y": 4.65, "3Y": 4.83, "5Y": 4.88, "10Y": 5.21, "30Y": 5.66},       # 15-Oct; 1Y interpolated, 30Y = 10Y + early-Oct 30-10 spread
 }
+# Real GDP growth, % (World Bank WDI, constant LCU, NY.GDP.MKTP.KN; retrieved 9 Nov 2026): (2025 y/y, 2016-2025 CAGR).
+# Written to the 2026 inputs so run_scenarios.py can split nominal growth into real growth + inflation (presentation only).
+REAL_GROWTH_2026 = {
+    "AU": (1.3504, 2.1922),
+    "CA": (1.7427, 2.0736),
+    "CN": (4.9599, 5.4394),
+    "DE": (0.2396, 0.5727),
+    "DK": (2.9284, 2.0658),
+    "FR": (0.8409, 1.2023),
+    "IT": (0.5396, 1.0113),
+    "UK": (1.3884, 1.2433),
+    "US": (2.1614, 2.4800),
+}
 MARKET_NOTE = {
     "US": "O/N = fed funds mid 3.75-4.00; 1Y = 1y CMT 16-Oct-2026; rest = on-the-run yields file",
     "CA": "O/N = BoC 2.25; 1Y = 1y T-bill 14-Oct-2026; rest = on-the-run yields file",
@@ -353,6 +366,10 @@ def write_csv(cc: str, vintage: int, a: dict, hist: dict, asof: date, curve: dic
         L.append(f"history,nominal_gdp,,{y},{hist['gdp'][y]:.3f},{note}")
     L.append(f"history,ngdp_growth_pct,,{base},{hist['g_base']:.4f},{q('latest y/y nominal growth; current-growth default')}")
     L.append(f"history,ngdp_growth_trend_pct,,{base},{hist['trend']:.4f},{q('2016-2025 nominal GDP CAGR (World Bank); used by run_scenarios.py')}")
+    if vintage == 2026 and cc in REAL_GROWTH_2026:
+        rl, rt = REAL_GROWTH_2026[cc]
+        L.append(f"history,real_gdp_growth_pct,,{base},{rl:.4f},{q('latest y/y real GDP growth (World Bank WDI, constant LCU, NY.GDP.MKTP.KN)')}")
+        L.append(f"history,real_gdp_growth_trend_pct,,{base},{rt:.4f},{q('2016-2025 real GDP CAGR (World Bank); run_scenarios.py splits nominal growth into real + inflation')}")
     for y in sorted(hist["debt"]):
         L.append(f"history,debt_held_by_public,,{y},{hist['debt'][y]:.3f},{q(('REQUIRED: ' if y == base else '') + 'marketable central govt debt, SRCH as of ' + str(hist['debt_asof'][y]))}")
     L.append(f"history,avg_cost_pct,,{base},{cost:.4f},{note_cost}")

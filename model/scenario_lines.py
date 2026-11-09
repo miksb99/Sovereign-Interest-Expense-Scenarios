@@ -121,7 +121,9 @@ def main() -> None:
             g = scen.growth[GROWTH[case]]; d = scen.deficit[DEFICIT[case]]
             r28 = {t: mats[case][(t, 2028)] for t in ("1Y", "2Y", "10Y", "30Y")}
             r36 = {t: mats[case][(t, 2036)] for t in ("1Y", "2Y", "10Y", "30Y")}
+            sp_ = rs.growth_split(inp, 2026, scen.growth)[GROWTH[case]]
             arows.append(dict(country=cc, case=case, nominal_gdp_growth_pct=g[t1.YEARS[0]], nominal_gdp_growth_2036=g[t1.YEARS[-1]],
+                              real_growth_pct=sp_[t1.YEARS[0]][0], inflation_pct=sp_[t1.YEARS[0]][1], real_growth_2036=sp_[t1.YEARS[-1]][0], inflation_2036=sp_[t1.YEARS[-1]][1],
                               nominal_gdp_growth_avg=sum(g.values()) / len(g),
                               primary_deficit_2027=d[t1.YEARS[0]], primary_deficit_2030=d[2030], primary_deficit_2036=d[t1.YEARS[-1]],
                               gg_primary_deficit_2026=pd_gg, central_primary_deficit_used=pd_c if has_t1 else pd_gg,
@@ -595,16 +597,25 @@ def main() -> None:
     def arrow(a, b, fmt):
         return fmt.format(a) if abs(a - b) < 0.05 else f"{fmt.format(a)} → {fmt.format(b)}"
 
+    def gsplit(r):
+        """'6.3 (3.3 + 3.0)' or, where the path changes, '6.3 (3.3 + 3.0) → 5.3 (3.8 + 1.5)'."""
+        a = f"{r['nominal_gdp_growth_pct']:.1f} ({r['real_growth_pct']:.1f} + {r['inflation_pct']:.1f})"
+        b = f"{r['nominal_gdp_growth_2036']:.1f} ({r['real_growth_2036']:.1f} + {r['inflation_2036']:.1f})"
+        return a if abs(r["nominal_gdp_growth_pct"] - r["nominal_gdp_growth_2036"]) < 0.05 else f"{a} → {b}"
+
     def assumptions_pages():
         out = [Paragraph("Assumptions behind each case", H1),
-               Paragraph("One page per case. Nominal growth is % a year (an arrow marks a change over the horizon). Primary balance is % of GDP with + = deficit, shown at "
+               Paragraph("One page per case. Growth is nominal GDP growth, % a year, with its split into real growth and inflation in brackets (an arrow marks a change over "
+                         "the horizon). Base real growth is the average of the 2016–25 real GDP CAGR and 2025 (World Bank, constant prices); base inflation is nominal less real, "
+                         "i.e. the GDP deflator. The bull adds +1 real with inflation unchanged in the boom, then +1.5 real against −1.5 inflation (US, UK, Canada, Australia) or −0.5 "
+                         "(euro members, Denmark); the bear is −1.5 real and +1 inflation; repression is +1 inflation with real growth at base. Primary balance is % of GDP with + = deficit, shown at "
                          "2027, 2030 and 2036; where a country has tier 1 the sovereign runs on the central balance (general government less the sub-national sector's own "
                          "balance) so sub-national borrowing is counted once. The curve is the new-issue rate at 1, 10 and 30 years in 2028 and in 2036; every other tenor "
                          "moves with the nearest set points. Tier 1 is summarised across the fiscal blocks: stock as % of GDP, stock growth in the first year, "
                          "debt-weighted WAM and spread over the sovereign curve (an arrow marks a change over the horizon). * = ECB-bloc case, not a national choice.", P)]
         for case in CASES:
             out += ([PageBreak()] if case != CASES[0] else []) + [Paragraph(rs.CASE_LABEL[case], H2), Paragraph(BIO[case], PB)]
-            data = [["Country", "Nominal growth, %/yr", "Primary balance, % GDP\n2027 / 2030 / 2036", "Curve 2028\n1Y / 10Y / 30Y", "Curve 2036\n1Y / 10Y / 30Y", "Tier 1 (fiscal blocks)"]]
+            data = [["Country", "Growth, %/yr\nnominal (real + inflation)", "Primary balance, % GDP\n2027 / 2030 / 2036", "Curve 2028\n1Y / 10Y / 30Y", "Curve 2036\n1Y / 10Y / 30Y", "Tier 1 (fiscal blocks)"]]
             for cc in CC:
                 r = ass.filter((pl.col("country") == cc) & (pl.col("case") == case)).row(0, named=True)
                 if r["t1_stock_pct_gdp"] > 0:
@@ -614,12 +625,12 @@ def main() -> None:
                 else:
                     t1_s = "—"
                 data.append([NAME[cc] + ("*" if r["bloc_contingent"] else ""),
-                             arrow(r["nominal_gdp_growth_pct"], r["nominal_gdp_growth_2036"], "{:.1f}"),
+                             gsplit(r),
                              f"{r['primary_deficit_2027']:+.1f} / {r['primary_deficit_2030']:+.1f} / {r['primary_deficit_2036']:+.1f}",
                              f"{r['rate_1Y_2028']:.1f} / {r['rate_10Y_2028']:.1f} / {r['rate_30Y_2028']:.1f}",
                              f"{r['rate_1Y_2036']:.1f} / {r['rate_10Y_2036']:.1f} / {r['rate_30Y_2036']:.1f}",
                              Paragraph(t1_s, TC)])
-            out += [tbl(data, [3.0 * cm, 3.2 * cm, 4.0 * cm, 3.0 * cm, 3.0 * cm, 10.2 * cm], size=8.2)]
+            out += [tbl(data, [2.6 * cm, 5.4 * cm, 3.6 * cm, 2.7 * cm, 2.7 * cm, 9.4 * cm], size=7.8)]
         return out
 
 

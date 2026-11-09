@@ -243,6 +243,41 @@ def settings_for(inp: dm.ModelInputs, vintage: int, extra_tenors=()) -> dict:
     return dict(growth=growth, deficit=deficit, mix=None, rates=curve_scenarios(inp, vintage, extra_tenors), cut=policy_cut(inp))
 
 
+# ---- real / inflation split of the growth assumptions (presentation only: the engine runs on nominal growth) -----------------
+# base real growth = average of the 2016-25 real GDP CAGR and the latest year (World Bank constant-LCU GDP, 'real_gdp_growth_*'
+# history rows); base inflation = base nominal less base real (the GDP deflator).  Each case adds (real, inflation) points that sum
+# to the nominal delta it already uses, so the split changes nothing in the results.
+SPLIT = {"base": (0.0, 0.0), "low": (-1.5, 1.0), "repression": (0.0, 1.0)}   # bear: real -1.5, inflation +1; repression: inflation +1, real at base
+BULL_SPLIT_PHASE1 = (1.0, 0.0)                                               # capex boom, inflation still 3-4%
+BULL_SPLIT_PHASE2 = {"own_ccy": (1.5, -1.5), "other": (1.5, -0.5)}           # US/UK/CA/AU: real +1.5 offset by disinflation; euro, DK keep more of it
+CN_SPLIT = {"base": (0.0, 0.0), "high": (1.0, 0.0), "low": (-1.5, 0.5), "repression": (0.0, 0.0)}
+
+
+def growth_split(inp: dm.ModelInputs, vintage: int, growth_paths: dict) -> dict | None:
+    """{growth scenario: {year: (real %, inflation %)}} consistent with the nominal paths; None if the input has no real-growth rows."""
+    base = inp.base_year
+    if "real_gdp_growth_pct" not in inp.history or "real_gdp_growth_trend_pct" not in inp.history:
+        return None
+    r_latest, r_trend = inp.history["real_gdp_growth_pct"][base], inp.history["real_gdp_growth_trend_pct"][base]
+    base_real = (r_latest + r_trend) / 2 if vintage == 2026 else r_latest
+    base_nom = growth_paths["base"][inp.years[0]]
+    base_infl = base_nom - base_real
+    cc = inp.meta.get("country_code")
+    out = {}
+    for name, path in growth_paths.items():
+        out[name] = {}
+        for y, g in path.items():
+            if cc == "CN" and vintage == 2026:
+                dr, di = CN_SPLIT.get(name, (g - base_nom, 0.0))
+            elif name == "high":
+                dr, di = BULL_SPLIT_PHASE1 if y - base <= BULL_PHASE1_END else BULL_SPLIT_PHASE2["own_ccy" if cc in BULL_PHASE2_GROWTH else "other"]
+            else:
+                dr, di = SPLIT.get(name, (g - base_nom, 0.0))               # e.g. the 2016 'realized' case: all real
+            assert abs((dr + di) - (g - base_nom)) < 1e-6, (cc, name, y, dr, di, g - base_nom)
+            out[name][y] = (base_real + dr, base_infl + di)
+    return out
+
+
 def split_runs(inp: dm.ModelInputs, scen: dm.Scenarios) -> tuple[dm.Scenarios, dm.Scenarios]:
     """The lever grid (growth low/base/high[/realized] x deficit x curve bull/base/bear) and the single joint repression cell."""
     roles = curve_roles(inp)
@@ -274,6 +309,11 @@ def main() -> None:
                 for name, path in d.items():
                     assumptions.append(dict(vintage=vintage, country=cc, kind=kind, scenario=name,
                                             **{str(y): v for y, v in path.items()}))
+            split = growth_split(inp, vintage, scen.growth)
+            if split:
+                for name, path in split.items():
+                    assumptions.append(dict(vintage=vintage, country=cc, kind="growth_real", scenario=name, **{str(y): v[0] for y, v in path.items()}))
+                    assumptions.append(dict(vintage=vintage, country=cc, kind="growth_inflation", scenario=name, **{str(y): v[1] for y, v in path.items()}))
             for name, mat in scen.rates.items():
                 for ten in ("O/N", "1Y", "2Y", "10Y", "30Y"):
                     assumptions.append(dict(vintage=vintage, country=cc, kind=f"rate_{ten}", scenario=name,
