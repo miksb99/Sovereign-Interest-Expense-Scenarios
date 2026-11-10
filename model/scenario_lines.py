@@ -524,7 +524,7 @@ def main() -> None:
             ax.plot(yrs, path, color=COL[case], lw=3.0 if heavy else 1.6, alpha=1.0 if heavy else 0.7, label=SHORT[case])
             ax.text(2036.1, path[-1], f" {path[-1]:.1f}", fontsize=8, va="center", color=INK)
         ax.axvspan(2026, 2030, color="#f1f0ec", zorder=0)
-        ax.text(2028, ax.get_ylim()[1] * 0.97, "2027–30: Fed tight (monetary dominance) or capped (repression)", ha="center", va="top", fontsize=8, color=INK2)
+        ax.text(2026.15, ax.get_ylim()[1] * 0.995, "2027–30: Fed tight (monetary dominance) or capped (repression)", ha="left", va="top", fontsize=8, color=INK2)
         ax.set_xlim(2026, 2037); ax.set_xticks([2026, 2028, 2030, 2032, 2034, 2036]); ax.set_ylabel("interest expense, % of GDP"); ax.grid(axis="x", visible=False)
         ax.legend(fontsize=8.5, loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=5)
         ax.set_title("United States: financial repression against monetary dominance (the 1979–98 template), interest / GDP 2026–2036", loc="left", fontsize=10.5, color=INK)
