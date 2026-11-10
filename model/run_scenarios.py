@@ -77,6 +77,8 @@ CASE_DEFICIT = {"bull": "improves", "base": "holds", "bear": "worsens", "repress
 US_GROWTH = {"high": (1.0, 0.0), "high_phase2": (1.0, -1.5), "low": (-1.5, 0.0), "repression": (0.0, 1.0)}
 US_REPRESSION_ZERO_BY = 4            # offset from the base year: primary balance reaches zero in 2030
 US_REPRESSION_BILLS = 0.80           # bills' share of gross issuance under repression; other tenors scale down pro rata
+US_REPRESSION_FRONT_MAX_TENOR = 2.0  # years: up to here the repression curve is the capped front end (held as a level); the 10Y and 30Y
+#                                    # take the BEAR levels (held as a spread over market), because the Fed cannot hold the long end: the curve steepens
 
 
 def case_deficit(cc: str, case: str) -> str:
@@ -237,6 +239,14 @@ def curve_scenarios(inp: dm.ModelInputs, vintage: int = 2026, extra_tenors=()) -
         out[CURVE_NAME[case]] = anchors_from_levels(inp, levels, extra_tenors, "level" if case == "repression" else "spread")
     terminal = dict(zip(ANCHOR_TENORS, BULL_TERMINAL[cc])) if (vintage == 2026 and cc in BULL_TERMINAL) else generic_levels(inp, "bull")
     out[CURVE_NAME["bull"]] = bull_anchors(inp, terminal, extra_tenors)
+    if vintage == 2026 and cc == "US":                   # US repression: capped front end, bear long end
+        rep, bear = dict(zip(ANCHOR_TENORS, CURVES_2028["repression"][cc])), dict(zip(ANCHOR_TENORS, CURVES_2028["bear"][cc]))
+        levels = {t: (rep[t] if dm.parse_tenor(t) <= US_REPRESSION_FRONT_MAX_TENOR else bear[t]) for t in ANCHOR_TENORS}
+        spread = anchors_from_levels(inp, levels, extra_tenors, "spread")
+        level = anchors_from_levels(inp, levels, extra_tenors, "level")
+        spec = {k: v for k, v in spread.items() if dm.parse_tenor(k[0]) > US_REPRESSION_FRONT_MAX_TENOR}
+        spec.update({k: v for k, v in level.items() if dm.parse_tenor(k[0]) <= US_REPRESSION_FRONT_MAX_TENOR})
+        out[CURVE_NAME["repression"]] = spec
     return out
 
 

@@ -590,8 +590,9 @@ def main() -> None:
                       "capped with the term premium near zero, so the curve is flat (10-year about 1.3 pt over the 1-year), reached by 2028 and held as a level. Nominal "
                       "growth 1 pt above base (inflation, not real growth); the primary balance is held, because repression substitutes for consolidation; tier 1 at its "
                       "middle pace with the longer WAM and tight spread as captive banks absorb it. For Germany, France and Italy this is an ECB-bloc case, not a national "
-                      "option; Australia gets a shallower cap; China already runs this curve. United States: the primary balance glides to zero by 2030 and is held "
-                      "there, and the Treasury leans on the capped front end, with bills rising to 80% of gross issuance from about 65%. Bondholders pay: a 10-year "
+                      "option; Australia gets a shallower cap; China already runs this curve. United States: the Fed holds the front end down (1-year 1.9, 2-year 2.2 in 2028) but cannot hold the long end, which sits where "
+                      "the bear puts it (10-year 5.9, 30-year 6.5, kept as a spread over market forwards), so the curve steepens sharply; the primary balance glides to "
+                      "zero by 2030 and is held there, and the Treasury leans on the capped front end, with bills rising to 80% of gross issuance from about 65%. Bondholders pay: a 10-year "
                       "near 3.3% against 3.5–4% inflation.",
     }
     SECTOR = {"CA": "provinces", "AU": "states", "CN": "local govt + LGFV", "DE": "Länder", "FR": "CADES, Unédic, ACOSS", "IT": "CDP, FS"}
