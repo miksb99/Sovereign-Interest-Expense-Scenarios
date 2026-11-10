@@ -52,10 +52,11 @@ CC = ["US", "FR", "IT", "UK", "CN", "AU", "CA", "DE", "DK"]
 NAME = {"US": "United States", "CA": "Canada", "UK": "United Kingdom", "DE": "Germany", "FR": "France", "IT": "Italy",
         "CN": "China", "DK": "Denmark", "AU": "Australia"}
 CASES = rs.CASES
-COL = {"bull": "#1baf7a", "base": "#2a78d6", "bear": "#eb6834", "repression": "#8e5bd0"}
+COL = {"bull": "#1baf7a", "base": "#2a78d6", "bear": "#eb6834", "repression": "#8e5bd0", "monetary": "#c48a1a"}
 INK, INK2, GRID, GRAY2 = "#0b0b0b", "#52514e", "#e8e7e3", "#8a8984"
 GROWTH, DEFICIT = rs.CASE_GROWTH, rs.CASE_DEFICIT
-SHORT = {"bull": "Bull (AI boom)", "base": "Base (market)", "bear": "Bear (higher for longer)", "repression": "Repression (capped curve)"}
+SHORT = {"bull": "Bull (AI boom)", "base": "Base (market)", "bear": "Bear (higher for longer)", "repression": "Repression (capped curve)",
+         "monetary": "Monetary dominance (US only)"}
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 9, "axes.edgecolor": GRID, "axes.labelcolor": INK2, "xtick.color": INK2,
                      "ytick.color": INK2, "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True, "grid.color": GRID,
                      "grid.linewidth": 0.6, "axes.axisbelow": True, "legend.frameon": False, "figure.dpi": 110, "savefig.dpi": 200, "savefig.bbox": "tight"})
@@ -83,9 +84,9 @@ def main() -> None:
         st = rs.settings_for(inp, 2026, tenors)
         scen = dm.resolve_scenarios(inp, st["growth"], st["deficit"], st["mix"], st["rates"])
         roles = rs.curve_roles(inp)
-        mats = {c: dm.build_rate_matrix(inp, st["rates"].get(roles[c]), tenors) for c in CASES}
+        mats = {c: dm.build_rate_matrix(inp, st["rates"].get(roles[c]), tenors) for c in rs.cases_for(cc)}
         ctx[cc] = dict(inp=inp, scen=scen, mats=mats, blocks=[b for b in blocks if b["cc"] == cc and b["fiscal"]], has_t1=has_t1)
-        for case in CASES:
+        for case in rs.cases_for(cc):
             sov = dm.project(inp, mats[case], scen.growth[GROWTH[case]], scen.deficit[rs.case_deficit(cc, case)], scen.issuance[rs.case_mix(cc, case)])
             gdp = {r["year"]: r["nominal_gdp"] for r in sov}
             t1_int = {r["year"]: 0.0 for r in sov}
@@ -187,7 +188,7 @@ def main() -> None:
         """Per country: a stacked bar of the four cases' nominal-growth assumptions (bull = its 2027-36 average) and, just to its
         left, a vertical column of dots with each case's interest / GDP in `year`.  One percentage axis for both."""
         g = {c: {case: ass.filter((pl.col("country") == c) & (pl.col("case") == case))["nominal_gdp_growth_avg"][0] for case in CASES} for c in CC}
-        v = {c: {case: val(c, case, year) for case in CASES} for c in CC}
+        v = {c: {case: val(c, case, year) for case in rs.cases_for(c)} for c in CC}
         groups = [("United States & China", ["US", "CN"]), ("Commonwealth", ["CA", "AU"]), ("Europe", ["UK", "DE", "FR", "IT"])]   # Denmark left out
         order = [c for _, cs in groups for c in cs]
         fig, ax = plt.subplots(figsize=(12.5, 6.2))
@@ -205,7 +206,7 @@ def main() -> None:
                     bottom = g[c][case]
             lo, hi = min(v[c].values()), max(v[c].values())
             ax.plot([xd, xd], [lo, hi], color="#dcdbd6", lw=4, zorder=1, solid_capstyle="round")
-            for case in CASES:
+            for case in rs.cases_for(c):
                 ax.scatter([xd], [v[c][case]], color=COL[case], s=64, zorder=4, edgecolor="white", linewidth=1.2)
             ax.text(xd - 0.09, hi, f"{hi:.1f}", ha="right", va="center", fontsize=7.5, color=INK2)
             ax.text(xd - 0.09, lo, f"{lo:.1f}", ha="right", va="center", fontsize=7.5, color=INK2)
@@ -222,7 +223,7 @@ def main() -> None:
         ax.set_ylabel("per cent of GDP (dots)  |  nominal GDP growth, % a year (bars)")
         ax.grid(axis="x", visible=False)
         bar_h = [Patch(facecolor=COL[case], alpha=0.55, label=SHORT[case]) for case in stack_order]
-        dot_h = [plt.Line2D([], [], marker="o", ls="", color=COL[case], markersize=8, label=SHORT[case]) for case in CASES]
+        dot_h = [plt.Line2D([], [], marker="o", ls="", color=COL[case], markersize=8, label=SHORT[case]) for case in CASES + ["monetary"]]
         leg1 = ax.legend(handles=bar_h, title="Bars: nominal GDP growth assumed, % a year", ncol=4, fontsize=8, title_fontsize=8.5,
                          loc="upper center", bbox_to_anchor=(0.5, -0.08), alignment="left")
         ax.add_artist(leg1)
@@ -513,7 +514,49 @@ def main() -> None:
                           "interest share the same percentage axis. Countries are grouped by region; Denmark is left out of this chart because its bill is near zero in every case.", P),
                 img(range_png, W, max_h=H - 6.0 * cm)]
 
-    story += then_page() + [PageBreak()] + range_page() + [PageBreak(),
+    def chart_us_compare():
+        """United States: every joint case's path, with repression and monetary dominance drawn heavier."""
+        fig, ax = plt.subplots(figsize=(10.5, 5.2))
+        yrs = list(range(2026, 2037))
+        for case in rs.cases_for("US"):
+            path = [val("US", case, y) for y in yrs]
+            heavy = case in ("repression", "monetary")
+            ax.plot(yrs, path, color=COL[case], lw=3.0 if heavy else 1.6, alpha=1.0 if heavy else 0.7, label=SHORT[case])
+            ax.text(2036.1, path[-1], f" {path[-1]:.1f}", fontsize=8, va="center", color=INK)
+        ax.axvspan(2026, 2030, color="#f1f0ec", zorder=0)
+        ax.text(2028, ax.get_ylim()[1] * 0.97, "2027–30: Fed tight (monetary dominance) or capped (repression)", ha="center", va="top", fontsize=8, color=INK2)
+        ax.set_xlim(2026, 2037); ax.set_xticks([2026, 2028, 2030, 2032, 2034, 2036]); ax.set_ylabel("interest expense, % of GDP"); ax.grid(axis="x", visible=False)
+        ax.legend(fontsize=8.5, loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=5)
+        ax.set_title("United States: financial repression against monetary dominance (the 1979–98 template), interest / GDP 2026–2036", loc="left", fontsize=10.5, color=INK)
+        pth = FIG / "us_compare.png"; fig.savefig(pth, facecolor="white"); plt.close(fig); return pth
+    us_png = chart_us_compare()
+
+    def us_page():
+        def fmt_growth(r):
+            def one(n, re_, inf):
+                return f"{n:.1f} ({re_:.1f} {'+' if inf >= 0 else '−'} {abs(inf):.1f})"
+            a_ = one(r["nominal_gdp_growth_pct"], r["real_growth_pct"], r["inflation_pct"]); b_ = one(r["nominal_gdp_growth_2036"], r["real_growth_2036"], r["inflation_2036"])
+            return a_ if abs(r["nominal_gdp_growth_pct"] - r["nominal_gdp_growth_2036"]) < 0.05 else f"{a_} → {b_}"
+        cols = ["bull", "base", "bear", "repression", "monetary"]
+        data = [["United States", "2026", "2030", "2036", "Peak", "Avg cost 2030 → 2036", "Debt / GDP 2036", "Growth 2027–36 (real + infl.)", "Primary balance 2030 → 2036"]]
+        for case in cols:
+            r = ass.filter((pl.col("country") == "US") & (pl.col("case") == case)).row(0, named=True)
+            yrs = list(range(2026, 2037)); path = [val("US", case, y) for y in yrs]; pk = max(range(len(yrs)), key=lambda i: path[i])
+            data.append([SHORT[case], f"{path[0]:.2f}%", f"{val('US', case, 2030):.2f}%", f"{path[-1]:.2f}%", f"{path[pk]:.2f}% ({yrs[pk]})",
+                         f"{val('US', case, 2030, 'sovereign_avg_cost'):.2f} → {val('US', case, 2036, 'sovereign_avg_cost'):.2f}", f"{val('US', case, 2036, 'sovereign_debt_pct_gdp'):.0f}%",
+                         fmt_growth(r), f"{r['primary_deficit_2030']:+.1f} → {r['primary_deficit_2036']:+.1f}"])
+        return [Paragraph("United States: financial repression against monetary dominance", H1),
+                Paragraph("Two ways out of the same arithmetic. <b>Repression</b> caps the front end below inflation for the decade (1-year 1.9%, 2-year 2.2% from 2028) "
+                          "while the long end sits at the bear's levels because the Fed cannot hold it, runs inflation a point higher, takes the primary balance to zero by "
+                          "2030 and shifts issuance to bills. <b>Monetary dominance</b> is the Volcker template: the Fed holds policy restrictive with a flat curve "
+                          "(1-year 5.6%, 10-year 5.6%, 30-year 5.9% from 2028) until inflation is beaten by 2030, a disinflation recession widens the deficit by 1.5 pt of GDP "
+                          "first, then credibility lets yields fall to a terminal curve by 2032 (2.5 / 2.7 / 3.5 / 3.9) and the budget is reversed to a 1% surplus by 2036. "
+                          "The 1980s version worked from a debt ratio half today's; on twice the stock the same four restrictive years cost far more interest before the "
+                          "relief arrives.", P),
+                img(us_png, W, max_h=H - 10.5 * cm),
+                tbl(data, [3.9 * cm, 1.5 * cm, 1.5 * cm, 1.5 * cm, 2.4 * cm, 3.2 * cm, 2.2 * cm, 5.6 * cm, 3.6 * cm], size=7.4)]
+
+    story += then_page() + [PageBreak()] + range_page() + [PageBreak()] + us_page() + [PageBreak(),
               Paragraph("Nominal growth assumptions, by country", H1),
               Paragraph("Base = average of the 2016–25 CAGR and the latest year; bull = base + 0.5; bear = base − 0.5; repression = base + 1.0 (inflation, not real growth). "
                         "China 6 / 5 / 4 / 5. The hollow circle is the latest observed year (2025). Countries are ordered by the base assumption.", P),
@@ -586,6 +629,11 @@ def main() -> None:
                 "reached by 2028 and held as a spread over market forwards. Nominal growth 0.5 pt below base, the primary deficit 1.5 pt of GDP worse by 2036, tier 1 at "
                 "its fastest historical pace with the shorter WAM and stressed spread. China: the yield cap fails, a parallel +1.5 pt shift. United States: real growth "
                 "−1.5 with inflation unchanged, so nominal growth is 1.5 pt below base.",
+        "monetary": "United States only, the Volcker template of 1979–98. The Fed holds policy restrictive and the curve flat through 2030 (1-year 5.6%, 2-year 5.5%, "
+                    "10-year 5.6%, 30-year 5.9% from 2028, kept as a spread over market forwards) until inflation is beaten; the disinflation recession costs 1 pt of real "
+                    "growth and the deficit widens 1.5 pt of GDP by 2030 to support the economy. From 2031 the economy recovers (real +0.7) with inflation 1.5 pt lower, "
+                    "credibility lets yields fall to a terminal curve by 2032 (2.5 / 2.7 / 3.5 / 3.9, held), and the budget is reversed to a 1% surplus by 2036. Compared "
+                    "with the 1980s the starting debt ratio is twice as high, so the four restrictive years cost far more interest before the relief arrives.",
         "repression": "Inflation of 3–4% with the curve engineered down. The full easing cycle is held for the decade (a negative real policy rate) and the long end is "
                       "capped with the term premium near zero, so the curve is flat (10-year about 1.3 pt over the 1-year), reached by 2028 and held as a level. Nominal "
                       "growth 1 pt above base (inflation, not real growth); the primary balance is held, because repression substitutes for consolidation; tier 1 at its "
@@ -621,10 +669,12 @@ def main() -> None:
                          "balance) so sub-national borrowing is counted once. The curve is the new-issue rate at 1, 10 and 30 years in 2028 and in 2036; every other tenor "
                          "moves with the nearest set points. Tier 1 is summarised across the fiscal blocks: stock as % of GDP, stock growth in the first year, "
                          "debt-weighted WAM and spread over the sovereign curve (an arrow marks a change over the horizon). * = ECB-bloc case, not a national choice.", P)]
-        for case in CASES:
+        for case in CASES + ["monetary"]:
             out += ([PageBreak()] if case != CASES[0] else []) + [Paragraph(rs.CASE_LABEL[case], H2), Paragraph(BIO[case], PB)]
             data = [["Country", "Growth, %/yr\nnominal (real + inflation)", "Primary balance, % GDP\n2027 / 2030 / 2036", "Curve 2028\n1Y / 10Y / 30Y", "Curve 2036\n1Y / 10Y / 30Y", "Tier 1 (fiscal blocks)"]]
             for cc in CC:
+                if case not in rs.cases_for(cc):
+                    continue
                 r = ass.filter((pl.col("country") == cc) & (pl.col("case") == case)).row(0, named=True)
                 if r["t1_stock_pct_gdp"] > 0:
                     g_s = (f"LGB {r['t1_growth_lgb']:+.0f}%, LGFV {r['t1_growth_lgfv']:+.0f}%" if cc == "CN" else f"{r['t1_growth_yr1']:+.1f}%/yr")
@@ -703,7 +753,7 @@ def main() -> None:
                       title="Interest/GDP scenario lines").build(story)
 
     # ---- short summary deck: range chart, sensitivity pies, assumptions --------------------------------------------
-    summary = then_page() + [PageBreak()] + range_page() + [PageBreak()] + pies_page(table_note=False) + [PageBreak()] + assumptions_pages() + [PageBreak()] + sources_pages()
+    summary = then_page() + [PageBreak()] + range_page() + [PageBreak()] + us_page() + [PageBreak()] + pies_page(table_note=False) + [PageBreak()] + assumptions_pages() + [PageBreak()] + sources_pages()
     pdf2 = OUT / "Scenario_Summary.pdf"
     SimpleDocTemplate(str(pdf2), pagesize=landscape(A4), leftMargin=1.6 * cm, rightMargin=1.6 * cm, topMargin=1.3 * cm, bottomMargin=1.3 * cm,
                       title="Interest/GDP scenario summary").build(summary)

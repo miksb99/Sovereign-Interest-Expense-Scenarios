@@ -77,8 +77,41 @@ CASE_DEFICIT = {"bull": "improves", "base": "holds", "bear": "worsens", "repress
 US_GROWTH = {"high": (1.0, 0.0), "high_phase2": (1.0, -1.5), "low": (-1.5, 0.0), "repression": (0.0, 1.0)}
 US_REPRESSION_ZERO_BY = 4            # offset from the base year: primary balance reaches zero in 2030
 US_REPRESSION_BILLS = 0.80           # bills' share of gross issuance under repression; other tenors scale down pro rata
+# ---- United States: a fifth joint case, MONETARY DOMINANCE, the Volcker template (1979-98).  Policy is held restrictive and the curve
+# flat through 2030 while inflation is beaten; a disinflation recession widens the deficit first; from 2031 the economy recovers with
+# inflation 1.5 pt lower, credibility lets yields fall to a terminal curve by 2032, and the budget is reversed to a surplus by 2036.
+US_MONETARY = dict(
+    curve_2028=(5.6, 5.5, 5.6, 5.9),      # 1Y / 2Y / 10Y / 30Y, reached by 2028 and held as a spread over market forwards to 2030
+    terminal=(2.5, 2.7, 3.5, 3.9),         # from 2032, held as a level: lower than the AI-bull terminal because real rates stay positive
+    growth_phase1=(-1.0, -0.5),            # (real, inflation) deltas 2027-30: the disinflation recession
+    growth_phase2=(0.7, -1.5),             # 2031-36: recovery with inflation 1.5 pt below base
+    deficit={4: "+1.5", 10: -1.0},        # widens 1.5 pt of GDP by 2030 (offset 4) to support the economy, reversed to a 1% surplus by 2036
+)
+CASE_LABEL["monetary"] = "Monetary dominance (United States only): the Volcker template"
+CASE_GROWTH["monetary"] = "monetary"
+CASE_DEFICIT["monetary"] = "monetary"
 US_REPRESSION_FRONT_MAX_TENOR = 2.0  # years: up to here the repression curve is the capped front end (held as a level); the 10Y and 30Y
 #                                    # take the BEAR levels (held as a spread over market), because the Fed cannot hold the long end: the curve steepens
+
+
+def cases_for(cc: str) -> list[str]:
+    """The joint cases a country runs: the four shared cases, plus monetary dominance for the United States."""
+    return CASES + ["monetary"] if cc == "US" else list(CASES)
+
+
+def monetary_anchors(inp: dm.ModelInputs, extra_tenors=()) -> dict:
+    """US monetary-dominance curve: the 2028 levels held as a spread over market through 2030, then a glide (2031) to the terminal
+    curve from 2032, held as a level."""
+    phase1 = dict(zip(ANCHOR_TENORS, US_MONETARY["curve_2028"])); term = dict(zip(ANCHOR_TENORS, US_MONETARY["terminal"]))
+    spread = anchors_from_levels(inp, phase1, extra_tenors, "spread")
+    spec = {k: v for k, v in spread.items() if k[1] <= BULL_PHASE1_END}
+    yT = inp.base_year + BULL_TERMINAL_FROM
+    shift_pts = sorted((dm.parse_tenor(t), lv - inp.curves.market_rate(t, yT)) for t, lv in term.items())
+    for lab in _labels(inp, extra_tenors) | set(term):
+        lvl = term[lab] if lab in term else inp.curves.market_rate(lab, yT) + _interp(dm.parse_tenor(lab), shift_pts)
+        for off in range(BULL_TERMINAL_FROM, inp.horizon + 1):
+            spec[(lab, off)] = lvl
+    return spec
 
 
 def case_deficit(cc: str, case: str) -> str:
@@ -247,6 +280,7 @@ def curve_scenarios(inp: dm.ModelInputs, vintage: int = 2026, extra_tenors=()) -
         spec = {k: v for k, v in spread.items() if dm.parse_tenor(k[0]) > US_REPRESSION_FRONT_MAX_TENOR}
         spec.update({k: v for k, v in level.items() if dm.parse_tenor(k[0]) <= US_REPRESSION_FRONT_MAX_TENOR})
         out[CURVE_NAME["repression"]] = spec
+        out["us_monetary_dominance"] = monetary_anchors(inp, extra_tenors)
     return out
 
 
@@ -254,7 +288,10 @@ def curve_roles(inp: dm.ModelInputs) -> dict:
     """Which named rate scenario plays each case for this country."""
     if inp.meta.get("country_code") == "CN":
         return {"bull": "market", "base": "cn_dm_steepener", "bear": "cn_cap_fails_parallel", "repression": "market"}
-    return {"bull": CURVE_NAME["bull"], "base": "market", "bear": CURVE_NAME["bear"], "repression": CURVE_NAME["repression"]}
+    roles = {"bull": CURVE_NAME["bull"], "base": "market", "bear": CURVE_NAME["bear"], "repression": CURVE_NAME["repression"]}
+    if inp.meta.get("country_code") == "US" and inp.base_year == 2026:
+        roles["monetary"] = "us_monetary_dominance"
+    return roles
 
 
 def settings_for(inp: dm.ModelInputs, vintage: int, extra_tenors=()) -> dict:
@@ -274,6 +311,8 @@ def settings_for(inp: dm.ModelInputs, vintage: int, extra_tenors=()) -> dict:
             g1, g2 = g_base + sum(US_GROWTH["high"]), g_base + sum(US_GROWTH["high_phase2"])
             growth["high"] = {1: g1, BULL_PHASE1_END: g1, BULL_PHASE1_END + 1: g2, 10: g2}   # two-phase, as the generic bull
             growth["low"] = g_base + sum(US_GROWTH["low"])
+            m1, m2 = g_base + sum(US_MONETARY["growth_phase1"]), g_base + sum(US_MONETARY["growth_phase2"])
+            growth["monetary"] = {1: m1, BULL_PHASE1_END: m1, BULL_PHASE1_END + 1: m2, 10: m2}
         if vintage != 2026:
             growth["realized"] = trend
     # 'improves' is the bull's budget: the boom's revenue harvest takes the primary balance to a surplus by BULL_SURPLUS_BY (2030) and
@@ -283,6 +322,7 @@ def settings_for(inp: dm.ModelInputs, vintage: int, extra_tenors=()) -> dict:
     mix = None
     if vintage == 2026 and cc == "US":
         deficit["zero"] = {US_REPRESSION_ZERO_BY: 0.0, 10: 0.0}                                # repression: balance to zero by 2030, held
+        deficit["monetary"] = dict(US_MONETARY["deficit"])                                     # monetary dominance: wider first, surplus by 2036
         cur = {b.name: inp.mix[(b.name, base)] for b in inp.buckets}
         scale = (1 - US_REPRESSION_BILLS) / (1 - cur["Bills"])
         mix = {"current": None, "more_bills": {b: (US_REPRESSION_BILLS if b == "Bills" else v * scale) for b, v in cur.items()}}
@@ -315,6 +355,8 @@ def growth_split(inp: dm.ModelInputs, vintage: int, growth_paths: dict) -> dict 
         for y, g in path.items():
             if cc == "CN" and vintage == 2026:
                 dr, di = CN_SPLIT.get(name, (g - base_nom, 0.0))
+            elif cc == "US" and vintage == 2026 and name == "monetary":
+                dr, di = US_MONETARY["growth_phase2" if y - base > BULL_PHASE1_END else "growth_phase1"]
             elif cc == "US" and vintage == 2026 and name in US_GROWTH:
                 dr, di = US_GROWTH["high_phase2" if (name == "high" and y - base > BULL_PHASE1_END) else name]
             elif name == "high":
@@ -326,17 +368,23 @@ def growth_split(inp: dm.ModelInputs, vintage: int, growth_paths: dict) -> dict 
     return out
 
 
-def split_runs(inp: dm.ModelInputs, scen: dm.Scenarios) -> tuple[dm.Scenarios, dm.Scenarios]:
-    """The lever grid (growth low/base/high[/realized] x deficit x curve bull/base/bear) and the single joint repression cell."""
+def split_runs(inp: dm.ModelInputs, scen: dm.Scenarios) -> list[dm.Scenarios]:
+    """The lever grid (growth low/base/high[/realized] x deficit x curve bull/base/bear), the single joint repression cell and, for the
+    United States, the joint monetary-dominance cell."""
     roles = curve_roles(inp)
     cc = inp.meta.get("country_code")
-    grid = dm.Scenarios(growth={k: v for k, v in scen.growth.items() if k != "repression"}, deficit={k: v for k, v in scen.deficit.items() if k != "zero"},
+    grid = dm.Scenarios(growth={k: v for k, v in scen.growth.items() if k not in ("repression", "monetary")},
+                        deficit={k: v for k, v in scen.deficit.items() if k not in ("zero", "monetary")},
                         issuance={"current": scen.issuance["current"]},
                         rates={n: scen.rates[n] for n in dict.fromkeys([roles["base"], roles["bull"], roles["bear"], "market"])}, notes=scen.notes)
     dname, mname = joint_keys(cc, "repression", scen)
     rep = dm.Scenarios(growth={"repression": scen.growth["repression"]}, deficit={dname: scen.deficit[dname]}, issuance={mname: scen.issuance[mname]},
                        rates={roles["repression"]: scen.rates[roles["repression"]]}, notes=[])
-    return grid, rep
+    runs = [grid, rep]
+    if "monetary" in roles and "monetary" in scen.growth:
+        runs.append(dm.Scenarios(growth={"monetary": scen.growth["monetary"]}, deficit={"monetary": scen.deficit["monetary"]},
+                                 issuance={"current": scen.issuance["current"]}, rates={roles["monetary"]: scen.rates[roles["monetary"]]}, notes=[]))
+    return runs
 
 
 def main() -> None:
@@ -350,12 +398,12 @@ def main() -> None:
                 print(f"{vintage} {cc}: WARNING {inp.warnings}")
             st = settings_for(inp, vintage)
             scen = dm.resolve_scenarios(inp, st["growth"], st["deficit"], st["mix"], st["rates"])
-            grid, rep = split_runs(inp, scen)
-            out, outr = dm.run_all(inp, grid), dm.run_all(inp, rep)
-            w = pl.concat([out.interest_to_gdp, outr.interest_to_gdp], how="vertical_relaxed")
+            outs = [dm.run_all(inp, r) for r in split_runs(inp, scen)]
+            out = outs[0]
+            w = pl.concat([o.interest_to_gdp for o in outs], how="vertical_relaxed")
             w.write_csv(out_dir / f"{cc}_interest_to_gdp.csv")
             wide.append(w)
-            detail.append(pl.concat([out.paths, outr.paths], how="vertical_relaxed"))
+            detail.append(pl.concat([o.paths for o in outs], how="vertical_relaxed"))
             for kind, d in (("growth", scen.growth), ("deficit", scen.deficit)):
                 for name, path in d.items():
                     assumptions.append(dict(vintage=vintage, country=cc, kind=kind, scenario=name,
@@ -373,7 +421,7 @@ def main() -> None:
             roles = curve_roles(inp)
             yH = str(inp.years[-1])
             rec = dict(country=cc)
-            for case in CASES:
+            for case in cases_for(cc) if vintage == 2026 else CASES:
                 rec[case] = w.filter((pl.col("rate_scenario") == roles[case]) & (pl.col("deficit_scenario") == joint_keys(cc, case, scen)[0])
                                      & (pl.col("growth_scenario") == CASE_GROWTH[case]))[yH][0]
             summary.append(rec)
