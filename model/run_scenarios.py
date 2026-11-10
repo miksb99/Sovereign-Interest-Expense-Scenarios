@@ -68,12 +68,13 @@ CASE_LABEL = {"bull": "Bull: AI boom, then disinflation", "base": "Base: market 
 CASE_GROWTH = {"bull": "high", "base": "base", "bear": "low", "repression": "repression"}      # growth scenario per case
 CASE_DEFICIT = {"bull": "improves", "base": "holds", "bear": "worsens", "repression": "holds"}  # deficit scenario per case
 
-# ---- United States overrides (specified 10 Nov 2026).  Growth is flat over the horizon and defined as (real, inflation) deltas:
-#   bull: an AI boom creates real growth and disinflation (+1.0 real, -1.5 inflation -> nominal -0.5) while Congress banks the surplus
-#   bear: real growth falls with inflation unchanged (-1.5 real, 0 inflation -> nominal -1.5)
+# ---- United States overrides (specified 10 Nov 2026).  Growth is defined as (real, inflation) deltas:
+#   bull: two phases like the generic bull -- the capex boom (2027-30) adds +1.0 real with inflation unchanged (nominal +1.0); from 2031
+#         the boom's disinflation slightly outweighs its real growth (+1.0 real, -1.5 inflation -> nominal -0.5) while Congress banks the surplus
+#   bear: real growth falls with inflation unchanged (-1.5 real, 0 inflation -> nominal -1.5), flat over the horizon
 #   repression: real at base, inflation +1 (nominal +1.0), the primary balance glides to ZERO by 2030 and stays there, and the
 #   Treasury leans on the capped front end: bills rise to US_REPRESSION_BILLS of gross issuance (about 0.65 today)
-US_GROWTH = {"high": (1.0, -1.5), "low": (-1.5, 0.0), "repression": (0.0, 1.0)}
+US_GROWTH = {"high": (1.0, 0.0), "high_phase2": (1.0, -1.5), "low": (-1.5, 0.0), "repression": (0.0, 1.0)}
 US_REPRESSION_ZERO_BY = 4            # offset from the base year: primary balance reaches zero in 2030
 US_REPRESSION_BILLS = 0.80           # bills' share of gross issuance under repression; other tenors scale down pro rata
 
@@ -259,8 +260,9 @@ def settings_for(inp: dm.ModelInputs, vintage: int, extra_tenors=()) -> dict:
         growth = {k: g_base + d for k, d in GROWTH_DELTA.items()}
         g1, g2 = g_base + BULL_PHASE1_GROWTH, g_base + BULL_PHASE2_GROWTH.get(cc, BULL_PHASE1_GROWTH)
         growth["high"] = {1: g1, BULL_PHASE1_END: g1, BULL_PHASE1_END + 1: g2, 10: g2}   # two-phase bull path
-        if vintage == 2026 and cc == "US":                                                 # US: flat paths from the (real, inflation) deltas
-            growth["high"] = g_base + sum(US_GROWTH["high"])
+        if vintage == 2026 and cc == "US":                                                 # US: paths from the (real, inflation) deltas
+            g1, g2 = g_base + sum(US_GROWTH["high"]), g_base + sum(US_GROWTH["high_phase2"])
+            growth["high"] = {1: g1, BULL_PHASE1_END: g1, BULL_PHASE1_END + 1: g2, 10: g2}   # two-phase, as the generic bull
             growth["low"] = g_base + sum(US_GROWTH["low"])
         if vintage != 2026:
             growth["realized"] = trend
@@ -304,7 +306,7 @@ def growth_split(inp: dm.ModelInputs, vintage: int, growth_paths: dict) -> dict 
             if cc == "CN" and vintage == 2026:
                 dr, di = CN_SPLIT.get(name, (g - base_nom, 0.0))
             elif cc == "US" and vintage == 2026 and name in US_GROWTH:
-                dr, di = US_GROWTH[name]
+                dr, di = US_GROWTH["high_phase2" if (name == "high" and y - base > BULL_PHASE1_END) else name]
             elif name == "high":
                 dr, di = BULL_SPLIT_PHASE1 if y - base <= BULL_PHASE1_END else BULL_SPLIT_PHASE2["own_ccy" if cc in BULL_PHASE2_GROWTH else "other"]
             else:

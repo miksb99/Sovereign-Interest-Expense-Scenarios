@@ -39,7 +39,7 @@ Nine countries run on October 2026 Bloomberg security-level inputs (2016 inputs 
 
 ### 1.2 Country readings
 
-**United States.** A two-part bet: that an AI boom delivers real growth and disinflation, and that Congress banks the proceeds. The boom's disinflation slightly outweighs its real growth (nominal growth 0.5 pt below base), so the surplus does the work: the bill falls to 2.4% of GDP by 2036 only because the primary balance turns to surplus by 2030. If the boom disappoints, the base case is 5.9% and the bear, real growth falling with inflation unchanged, is 8.0%. Repression is the cheapest exit on paper, 1.8%, but only with a zero primary balance and the Treasury leaning on the capped front end with bills at 80% of issuance; it is paid by bondholders, and the US has the fastest-repricing stock in the sample and the only front-end-driven bill, so fiscal pressure lands on the policy rate.
+**United States.** A two-part bet: that an AI boom delivers real growth and disinflation, and that Congress banks the proceeds. After the boom years, the disinflation slightly outweighs the real growth (nominal growth 0.5 pt below base from 2031), so the surplus does the work: the bill falls to 2.3% of GDP by 2036 only because the primary balance turns to surplus by 2030. If the boom disappoints, the base case is 5.9% and the bear, real growth falling with inflation unchanged, is 8.0%. Repression is the cheapest exit on paper, 1.8%, but only with a zero primary balance and the Treasury leaning on the capped front end with bills at 80% of issuance; it is paid by bondholders, and the US has the fastest-repricing stock in the sample and the only front-end-driven bill, so fiscal pressure lands on the policy rate.
 
 **China.** Already running a partial financial repression: rates are capped by forcing captive savers to hold government and local paper, while a general-government deficit of 7–8% of GDP keeps nominal growth up. The cap has worked on price (average rate 3.9% → 3.3% since 2022) but not on quantity, so the bill has stayed flat at 3.7% rather than falling and savers are subsidising local government indefinitely. The bear case is the cap failing; administered regimes rarely fail smoothly. Because LGFV bonds and loans are included, these figures run far above the official measure.
 
@@ -82,7 +82,7 @@ The rise since 2022 is almost entirely price, not quantity: debt ratios barely m
 
 | | 2026 | Bull | Base | Bear | Repression |
 |---|---|---|---|---|---|
-| United States | 3.3 | 2.4 | 5.9 | 8.0 | 1.8 |
+| United States | 3.3 | 2.3 | 5.9 | 8.0 | 1.8 |
 | France | 2.3 | 2.8 | 6.6 | 8.6 | 2.8 † |
 | Italy | 3.8 | 2.7 | 5.3 | 6.8 | 2.6 † |
 | United Kingdom | 2.7 | 2.1 | 4.1 | 5.3 | 2.3 |
@@ -127,7 +127,7 @@ The curve is the largest lever per unit everywhere but Denmark, and the US and F
 | | 2026 | 2030 (end of phase 1) | 2036 | Slope 2034→36, pp/yr | Average cost 2030 → 2036 |
 |---|---|---|---|---|---|
 | Italy | 3.75 | 4.14 | 2.71 | −0.22 | 3.85 → 2.94 |
-| United States | 3.30 | 3.97 | 2.43 | −0.14 | 4.33 → 3.03 |
+| United States | 3.30 | 3.76 | 2.29 | −0.14 | 4.33 → 3.03 |
 | United Kingdom | 2.65 | 2.94 | 2.14 | −0.12 | 3.81 → 3.26 |
 | France | 2.34 | 3.65 | 2.79 | −0.10 | 3.66 → 3.09 |
 | China | 3.70 | 2.98 | 2.40 | −0.08 | 1.93 → 2.02 |
@@ -135,7 +135,7 @@ The curve is the largest lever per unit everywhere but Denmark, and the US and F
 | Germany | 1.11 | 1.39 | 0.91 | −0.06 | 2.68 → 2.22 |
 | Australia | 1.94 | 2.50 | 2.40 | −0.03 | 3.98 → 3.76 |
 
-The boom alone is not enough; the surplus by 2030 does the work (for the US the bull's nominal growth is actually below base, so all of its improvement is the budget and the cuts). Phase 1 is expensive: the US and France add 1–1.7 pt of GDP of interest by 2030 financing a boom at today's curve. Fast repricing (US cost 4.3% → 3.0%) and a surplus (Italy) make the steepest fallers; Australia is flat because its states keep borrowing through the cuts.
+The boom alone is not enough; the surplus by 2030 does the work (for the US the bull's nominal growth drops below base after 2030, so its improvement is the budget and the cuts). Phase 1 is expensive: the US and France add 1–1.7 pt of GDP of interest by 2030 financing a boom at today's curve. Fast repricing (US cost 4.3% → 3.0%) and a surplus (Italy) make the steepest fallers; Australia is flat because its states keep borrowing through the cuts.
 
 ---
 
@@ -146,7 +146,7 @@ Every number is defined relative to each country's own starting point. Full per-
 | | Nominal growth | Primary balance | Yield curve | Tier 1 |
 |---|---|---|---|---|
 | **Base** (market) | Nominal = average of the 2016–25 CAGR and the latest year; split into real growth (same rule on World Bank constant-price GDP) and inflation (the residual, i.e. the GDP deflator) | Held at today's level | Market-implied forwards from today's curve | Middle historical growth pace, current WAM, through-cycle spread |
-| **Bull** (AI boom, then disinflation) | 2027–30: real +1.0, inflation unchanged (nominal +1.0). From 2031: real +1.5 against inflation −1.5 for the UK, Canada, Australia (nominal back to base); real +1.5 against inflation −0.5 for euro members and Denmark (nominal +1.0); China +1.0 real throughout. **United States:** flat at real +1.0, inflation −1.5 (nominal −0.5) for the decade | Glides from today to a surplus of at least 1% of GDP by 2030 (1.5 pt better where already in surplus), then held | 2027–30 on market forwards; glides over 2031–32 to a low terminal curve (US 2.0 / 2.2 / 3.0 / 3.5 at 1, 2, 10, 30 years; France's spread over Bunds tightened to ~100 bp) and held | Middle pace; the longer WAM and tight spread phased in over 2031–32 |
+| **Bull** (AI boom, then disinflation) | 2027–30: real +1.0, inflation unchanged (nominal +1.0). From 2031: real +1.5 against inflation −1.5 for the UK, Canada, Australia (nominal back to base); real +1.5 against inflation −0.5 for euro members and Denmark (nominal +1.0); China +1.0 real throughout. **United States:** 2027–30 as above; from 2031 real +1.0 against inflation −1.5 (nominal −0.5) | Glides from today to a surplus of at least 1% of GDP by 2030 (1.5 pt better where already in surplus), then held | 2027–30 on market forwards; glides over 2031–32 to a low terminal curve (US 2.0 / 2.2 / 3.0 / 3.5 at 1, 2, 10, 30 years; France's spread over Bunds tightened to ~100 bp) and held | Middle pace; the longer WAM and tight spread phased in over 2031–32 |
 | **Bear** (inflation persists, higher for longer) | Real −1.5, inflation +1.0 (nominal −0.5). **United States:** real −1.5, inflation unchanged (nominal −1.5) | 1.5 pt of GDP worse by 2036 | No cuts: front end +25 bp over market; term premium rebuilds with the fiscal position (30-year +110 bp high-debt, +65 bp low-debt; France +50, Italy +75 bp of spread from 10 years out); reached by 2028 and held as a spread over market forwards | Fastest historical pace, shorter WAM, stressed spread |
 | **Repression** (inflation 3–4%, curve capped) | Real at base, inflation +1.0 (nominal +1.0) | Held (repression substitutes for consolidation). **United States:** glides to zero by 2030 and is held there, with bills rising to 80% of gross issuance | Full easing cycle held for the decade; long end capped with the term premium near zero (10-year ≈ 1-year + 1.3); reached by 2028 and held as a level. An ECB-bloc case for Germany, France, Italy; shallower cap for Australia | Middle pace, longer WAM, tight spread (captive banks absorb it) |
 

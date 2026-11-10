@@ -575,8 +575,8 @@ def main() -> None:
                 "and a revenue harvest that takes the primary balance to a surplus of at least 1% of GDP by 2030 (1.5 pt better where already in surplus). From 2031 the "
                 "buildout is done, inflation falls and central banks cut: the curve glides over 2031–32 to a low terminal level and holds; growth falls back to base for "
                 "the US, UK, Canada and Australia and stays base +1 for the euro members, Denmark and China; the surplus is held. Tier 1 keeps its middle growth pace and "
-                "moves to the longer WAM and tight spread as the cuts arrive. China's curve stays at market (the cap holds). United States: the growth path is "
-                "instead flat at base −0.5 for the decade, real +1.0 against inflation −1.5, the boom's disinflation slightly outweighing its real growth; the "
+                "moves to the longer WAM and tight spread as the cuts arrive. China's curve stays at market (the cap holds). United States: the boom phase is the same "
+                "(real +1.0, inflation unchanged), but from 2031 real growth +1.0 is outweighed by inflation −1.5, so nominal growth runs 0.5 pt below base; the "
                 "surplus and the curve path are as above.",
         "base": "Market pricing. New issuance is priced at the forward rates implied by today's curve with today's term premium; nominal growth is the average of the "
                 "2016–25 CAGR and the latest year; the primary balance is held at today's level; tier 1 grows at its middle historical pace with its current WAM and "
