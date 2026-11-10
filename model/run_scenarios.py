@@ -67,6 +67,31 @@ CASE_LABEL = {"bull": "Bull: AI boom, then disinflation", "base": "Base: market 
               "bear": "Bear: inflation persists, higher for longer", "repression": "Repression: inflation 3–4%, curve capped"}
 CASE_GROWTH = {"bull": "high", "base": "base", "bear": "low", "repression": "repression"}      # growth scenario per case
 CASE_DEFICIT = {"bull": "improves", "base": "holds", "bear": "worsens", "repression": "holds"}  # deficit scenario per case
+
+# ---- United States overrides (specified 10 Nov 2026).  Growth is flat over the horizon and defined as (real, inflation) deltas:
+#   bull: an AI boom creates real growth and disinflation (+1.0 real, -1.5 inflation -> nominal -0.5) while Congress banks the surplus
+#   bear: real growth falls with inflation unchanged (-1.5 real, 0 inflation -> nominal -1.5)
+#   repression: real at base, inflation +1 (nominal +1.0), the primary balance glides to ZERO by 2030 and stays there, and the
+#   Treasury leans on the capped front end: bills rise to US_REPRESSION_BILLS of gross issuance (about 0.65 today)
+US_GROWTH = {"high": (1.0, -1.5), "low": (-1.5, 0.0), "repression": (0.0, 1.0)}
+US_REPRESSION_ZERO_BY = 4            # offset from the base year: primary balance reaches zero in 2030
+US_REPRESSION_BILLS = 0.80           # bills' share of gross issuance under repression; other tenors scale down pro rata
+
+
+def case_deficit(cc: str, case: str) -> str:
+    """Deficit scenario name a joint case uses for a country (the US repression case runs a zero primary balance)."""
+    return "zero" if (cc == "US" and case == "repression") else CASE_DEFICIT[case]
+
+
+def case_mix(cc: str, case: str) -> str:
+    """Issuance-mix scenario name a joint case uses (the US repression case issues more bills)."""
+    return "more_bills" if (cc == "US" and case == "repression") else "current"
+
+
+def joint_keys(cc: str, case: str, scen: dm.Scenarios) -> tuple[str, str]:
+    """(deficit scenario, issuance scenario) for a joint case, falling back to the generic names where a vintage lacks the override."""
+    d, m = case_deficit(cc, case), case_mix(cc, case)
+    return (d if d in scen.deficit else CASE_DEFICIT[case]), (m if m in scen.issuance else "current")
 GROWTH_DELTA = {"low": -0.5, "base": 0.0, "repression": 1.0}       # pp of nominal growth vs base (the bull path is two-phase, below)
 DEFICIT_SHOCK = 1.5          # pp of GDP, reached by the final year (improves / worsens)
 CUT_YEAR = 2                 # years after the base year at which the bear / repression curve is fully in place
@@ -234,13 +259,22 @@ def settings_for(inp: dm.ModelInputs, vintage: int, extra_tenors=()) -> dict:
         growth = {k: g_base + d for k, d in GROWTH_DELTA.items()}
         g1, g2 = g_base + BULL_PHASE1_GROWTH, g_base + BULL_PHASE2_GROWTH.get(cc, BULL_PHASE1_GROWTH)
         growth["high"] = {1: g1, BULL_PHASE1_END: g1, BULL_PHASE1_END + 1: g2, 10: g2}   # two-phase bull path
+        if vintage == 2026 and cc == "US":                                                 # US: flat paths from the (real, inflation) deltas
+            growth["high"] = g_base + sum(US_GROWTH["high"])
+            growth["low"] = g_base + sum(US_GROWTH["low"])
         if vintage != 2026:
             growth["realized"] = trend
     # 'improves' is the bull's budget: the boom's revenue harvest takes the primary balance to a surplus by BULL_SURPLUS_BY (2030) and
     # holds it there.  Resolved against inp.primary_deficit_current at call time (the consolidated scripts set the central figure first).
     tgt = bull_deficit_target(inp.primary_deficit_current)
     deficit = {"improves": {BULL_SURPLUS_BY: tgt, 10: tgt}, "holds": None, "worsens": {10: f"+{DEFICIT_SHOCK}"}}
-    return dict(growth=growth, deficit=deficit, mix=None, rates=curve_scenarios(inp, vintage, extra_tenors), cut=policy_cut(inp))
+    mix = None
+    if vintage == 2026 and cc == "US":
+        deficit["zero"] = {US_REPRESSION_ZERO_BY: 0.0, 10: 0.0}                                # repression: balance to zero by 2030, held
+        cur = {b.name: inp.mix[(b.name, base)] for b in inp.buckets}
+        scale = (1 - US_REPRESSION_BILLS) / (1 - cur["Bills"])
+        mix = {"current": None, "more_bills": {b: (US_REPRESSION_BILLS if b == "Bills" else v * scale) for b, v in cur.items()}}
+    return dict(growth=growth, deficit=deficit, mix=mix, rates=curve_scenarios(inp, vintage, extra_tenors), cut=policy_cut(inp))
 
 
 # ---- real / inflation split of the growth assumptions (presentation only: the engine runs on nominal growth) -----------------
@@ -269,6 +303,8 @@ def growth_split(inp: dm.ModelInputs, vintage: int, growth_paths: dict) -> dict 
         for y, g in path.items():
             if cc == "CN" and vintage == 2026:
                 dr, di = CN_SPLIT.get(name, (g - base_nom, 0.0))
+            elif cc == "US" and vintage == 2026 and name in US_GROWTH:
+                dr, di = US_GROWTH[name]
             elif name == "high":
                 dr, di = BULL_SPLIT_PHASE1 if y - base <= BULL_PHASE1_END else BULL_SPLIT_PHASE2["own_ccy" if cc in BULL_PHASE2_GROWTH else "other"]
             else:
@@ -281,9 +317,12 @@ def growth_split(inp: dm.ModelInputs, vintage: int, growth_paths: dict) -> dict 
 def split_runs(inp: dm.ModelInputs, scen: dm.Scenarios) -> tuple[dm.Scenarios, dm.Scenarios]:
     """The lever grid (growth low/base/high[/realized] x deficit x curve bull/base/bear) and the single joint repression cell."""
     roles = curve_roles(inp)
-    grid = dm.Scenarios(growth={k: v for k, v in scen.growth.items() if k != "repression"}, deficit=scen.deficit, issuance=scen.issuance,
+    cc = inp.meta.get("country_code")
+    grid = dm.Scenarios(growth={k: v for k, v in scen.growth.items() if k != "repression"}, deficit={k: v for k, v in scen.deficit.items() if k != "zero"},
+                        issuance={"current": scen.issuance["current"]},
                         rates={n: scen.rates[n] for n in dict.fromkeys([roles["base"], roles["bull"], roles["bear"], "market"])}, notes=scen.notes)
-    rep = dm.Scenarios(growth={"repression": scen.growth["repression"]}, deficit={"holds": scen.deficit["holds"]}, issuance=scen.issuance,
+    dname, mname = joint_keys(cc, "repression", scen)
+    rep = dm.Scenarios(growth={"repression": scen.growth["repression"]}, deficit={dname: scen.deficit[dname]}, issuance={mname: scen.issuance[mname]},
                        rates={roles["repression"]: scen.rates[roles["repression"]]}, notes=[])
     return grid, rep
 
@@ -323,7 +362,7 @@ def main() -> None:
             yH = str(inp.years[-1])
             rec = dict(country=cc)
             for case in CASES:
-                rec[case] = w.filter((pl.col("rate_scenario") == roles[case]) & (pl.col("deficit_scenario") == CASE_DEFICIT[case])
+                rec[case] = w.filter((pl.col("rate_scenario") == roles[case]) & (pl.col("deficit_scenario") == joint_keys(cc, case, scen)[0])
                                      & (pl.col("growth_scenario") == CASE_GROWTH[case]))[yH][0]
             summary.append(rec)
             print(f"{vintage} {cc}: {w.height} scenarios; base growth {scen.growth['base'][inp.years[0]]:.2f}%, "

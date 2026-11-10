@@ -81,12 +81,12 @@ def main() -> None:
         pd_c = pd_gg - t1_bal.get(cc, 0.0)
         inp.primary_deficit_current = pd_c                      # deficit cases glide from (and target relative to) the central figure
         st = rs.settings_for(inp, 2026, tenors)
-        scen = dm.resolve_scenarios(inp, st["growth"], st["deficit"], None, st["rates"])
+        scen = dm.resolve_scenarios(inp, st["growth"], st["deficit"], st["mix"], st["rates"])
         roles = rs.curve_roles(inp)
         mats = {c: dm.build_rate_matrix(inp, st["rates"].get(roles[c]), tenors) for c in CASES}
         ctx[cc] = dict(inp=inp, scen=scen, mats=mats, blocks=[b for b in blocks if b["cc"] == cc and b["fiscal"]], has_t1=has_t1)
         for case in CASES:
-            sov = dm.project(inp, mats[case], scen.growth[GROWTH[case]], scen.deficit[DEFICIT[case]])
+            sov = dm.project(inp, mats[case], scen.growth[GROWTH[case]], scen.deficit[rs.case_deficit(cc, case)], scen.issuance[rs.case_mix(cc, case)])
             gdp = {r["year"]: r["nominal_gdp"] for r in sov}
             t1_int = {r["year"]: 0.0 for r in sov}
             t1_stock = {r["year"]: 0.0 for r in sov}
@@ -118,7 +118,7 @@ def main() -> None:
                                  sovereign_avg_cost=r["avg_cost_pct"], blended_avg_cost=blended,
                                  ngdp_growth_assumed=g_assumed, r_minus_g=blended - g_assumed,
                                  g_minus_intgdp=inp.ngdp_growth_current - (r["interest_pct_gdp"] + t1_int[y] / gdp[y] * 100)))
-            g = scen.growth[GROWTH[case]]; d = scen.deficit[DEFICIT[case]]
+            g = scen.growth[GROWTH[case]]; d = scen.deficit[rs.case_deficit(cc, case)]
             r28 = {t: mats[case][(t, 2028)] for t in ("1Y", "2Y", "10Y", "30Y")}
             r36 = {t: mats[case][(t, 2036)] for t in ("1Y", "2Y", "10Y", "30Y")}
             sp_ = rs.growth_split(inp, 2026, scen.growth)[GROWTH[case]]
@@ -575,19 +575,24 @@ def main() -> None:
                 "and a revenue harvest that takes the primary balance to a surplus of at least 1% of GDP by 2030 (1.5 pt better where already in surplus). From 2031 the "
                 "buildout is done, inflation falls and central banks cut: the curve glides over 2031–32 to a low terminal level and holds; growth falls back to base for "
                 "the US, UK, Canada and Australia and stays base +1 for the euro members, Denmark and China; the surplus is held. Tier 1 keeps its middle growth pace and "
-                "moves to the longer WAM and tight spread as the cuts arrive. China's curve stays at market (the cap holds).",
+                "moves to the longer WAM and tight spread as the cuts arrive. China's curve stays at market (the cap holds). United States: the growth path is "
+                "instead flat at base −0.5 for the decade, real +1.0 against inflation −1.5, the boom's disinflation slightly outweighing its real growth; the "
+                "surplus and the curve path are as above.",
         "base": "Market pricing. New issuance is priced at the forward rates implied by today's curve with today's term premium; nominal growth is the average of the "
                 "2016–25 CAGR and the latest year; the primary balance is held at today's level; tier 1 grows at its middle historical pace with its current WAM and "
                 "through-cycle spread. China's administered curve steepens the way a developed market's would (long end +0.75 to +1 pt).",
         "bear": "Inflation persists and rates stay higher for longer. No cuts: the front end sits 25 bp over market and the term premium rebuilds in proportion to the "
                 "fiscal position (30-year +110 bp for the high-debt countries, +65 bp for the low-debt ones, France +50 and Italy +75 bp of spread from ten years out), "
                 "reached by 2028 and held as a spread over market forwards. Nominal growth 0.5 pt below base, the primary deficit 1.5 pt of GDP worse by 2036, tier 1 at "
-                "its fastest historical pace with the shorter WAM and stressed spread. China: the yield cap fails, a parallel +1.5 pt shift.",
+                "its fastest historical pace with the shorter WAM and stressed spread. China: the yield cap fails, a parallel +1.5 pt shift. United States: real growth "
+                "−1.5 with inflation unchanged, so nominal growth is 1.5 pt below base.",
         "repression": "Inflation of 3–4% with the curve engineered down. The full easing cycle is held for the decade (a negative real policy rate) and the long end is "
                       "capped with the term premium near zero, so the curve is flat (10-year about 1.3 pt over the 1-year), reached by 2028 and held as a level. Nominal "
                       "growth 1 pt above base (inflation, not real growth); the primary balance is held, because repression substitutes for consolidation; tier 1 at its "
                       "middle pace with the longer WAM and tight spread as captive banks absorb it. For Germany, France and Italy this is an ECB-bloc case, not a national "
-                      "option; Australia gets a shallower cap; China already runs this curve. Bondholders pay: a 10-year near 3.3% against 3.5–4% inflation.",
+                      "option; Australia gets a shallower cap; China already runs this curve. United States: the primary balance glides to zero by 2030 and is held "
+                      "there, and the Treasury leans on the capped front end, with bills rising to 80% of gross issuance from about 65%. Bondholders pay: a 10-year "
+                      "near 3.3% against 3.5–4% inflation.",
     }
     SECTOR = {"CA": "provinces", "AU": "states", "CN": "local govt + LGFV", "DE": "Länder", "FR": "CADES, Unédic, ACOSS", "IT": "CDP, FS"}
     H2 = ParagraphStyle("H2", parent=H1, fontSize=12.5, spaceBefore=2, spaceAfter=4)

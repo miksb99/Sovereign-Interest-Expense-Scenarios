@@ -336,18 +336,18 @@ def main() -> None:
         pd_central = pd_gg - t1_bal[cc]
         inp.primary_deficit_current = pd_central                 # the deficit cases glide from (and target relative to) the central figure
         st = rs.settings_for(inp, 2026)
-        scen = dm.resolve_scenarios(inp, st["growth"], st["deficit"], None, st["rates"])
+        scen = dm.resolve_scenarios(inp, st["growth"], st["deficit"], st["mix"], st["rates"])
         inp.primary_deficit_current = pd_gg
         for sov_case, sov_name in rs.curve_roles(inp).items():
-            g, d = scen.growth[rs.CASE_GROWTH[sov_case]], scen.deficit[rs.CASE_DEFICIT[sov_case]]
-            sov_central[(cc, sov_case)] = pl.DataFrame(dm.project(inp, scen.rates[sov_name], g, d))
+            g, d = scen.growth[rs.CASE_GROWTH[sov_case]], scen.deficit[rs.case_deficit(cc, sov_case)]
+            sov_central[(cc, sov_case)] = pl.DataFrame(dm.project(inp, scen.rates[sov_name], g, d, scen.issuance[rs.case_mix(cc, sov_case)]))
             sov_growth[(cc, sov_case)] = g[YEARS[0]]
         print(f"{cc}: GG primary deficit {pd_gg:+.2f}% GDP, tier-1 sector balance share {t1_bal[cc]:+.2f} -> central {pd_central:+.2f}")
     crows = []
     for cc, inp in inputs26.items():
         for sov_case, sov_name in rs.curve_roles(inp).items():
             sov = sov_central[(cc, sov_case)].sort("year")
-            sov_gg = det.filter((pl.col("country") == cc) & (pl.col("rate_scenario") == sov_name) & (pl.col("deficit_scenario") == rs.CASE_DEFICIT[sov_case])
+            sov_gg = det.filter((pl.col("country") == cc) & (pl.col("rate_scenario") == sov_name) & (pl.col("deficit_scenario") == rs.case_deficit(cc, sov_case))
                                 & (pl.col("growth_scenario") == rs.CASE_GROWTH[sov_case])).sort("year")
             for t1_case in rs.CASES:
                 for variant, fiscal_only in (("fiscal", True), ("incl_exposure", False)):

@@ -241,7 +241,7 @@ def chart_country(cc, wide, det, ys, path, vintage, roles=None):
     # plus the joint repression case (its own growth, deficit held)
     series = [(roles["base"], "holds", "base", "base curve (market)", S1), (roles["bear"], "holds", "base", "bear curve", S2),
               (roles["bull"], "holds", "base", "bull curve", S3),
-              (roles["repression"], "holds", "repression", "repression (joint)" + (", ECB-bloc case" if cc in rs.BLOC_CONTINGENT else ""), REP_COL)]
+              (roles["repression"], rs.case_deficit(cc, "repression"), "repression", "repression (joint)" + (", ECB-bloc case" if cc in rs.BLOC_CONTINGENT else ""), REP_COL)]
     for name, dname, gname, lab, col in series:
         b = row(wide, cc, rate_scenario=name, deficit_scenario=dname, growth_scenario=gname)
         ax.plot(xs, [b[y] for y in ys], color=col, lw=2, label=lab, ls="--" if gname == "repression" and cc in rs.BLOC_CONTINGENT else "-")
@@ -352,7 +352,7 @@ def build():
         rl = rs.curve_roles(inp)
         up = row(w26, cc, rate_scenario=rl["bear"], deficit_scenario="holds", growth_scenario="base")[yH]
         dn = row(w26, cc, rate_scenario=rl["bull"], deficit_scenario="holds", growth_scenario="base")[yH]
-        rep = row(w26, cc, rate_scenario=rl["repression"], deficit_scenario="holds", growth_scenario="repression")[yH]
+        rep = row(w26, cc, rate_scenario=rl["repression"], deficit_scenario=rs.case_deficit(cc, "repression"), growth_scenario="repression")[yH]
         cut = a26.filter((pl.col("country") == cc) & (pl.col("kind") == "policy_cut_pp"))["2027"][0]
         worse = row(w26, cc, rate_scenario="market", deficit_scenario="worsens", growth_scenario="base")[yH]
         slow = row(w26, cc, rate_scenario="market", deficit_scenario="holds", growth_scenario="low")[yH]
